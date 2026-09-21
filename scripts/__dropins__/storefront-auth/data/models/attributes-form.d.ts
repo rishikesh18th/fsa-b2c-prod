@@ -58,3 +58,4 @@ export interface AttributesFormItemsProps {
 }
 export interface AttributesFormModel extends AttributesFormItemsProps {
 }
+//# sourceMappingURL=attributes-form.d.ts.map

@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './transform-store-config';
 export * from './transform-visitor-data';
+//# sourceMappingURL=index.d.ts.map

@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const getCompanyCreditQuery = "\n  query getCompanyCredit {\n    company {\n      credit {\n        exceed_limit\n        available_credit {\n          value\n          currency\n        }\n      }\n    }\n  }\n";
+//# sourceMappingURL=getCompanyCredit.graphql.d.ts.map

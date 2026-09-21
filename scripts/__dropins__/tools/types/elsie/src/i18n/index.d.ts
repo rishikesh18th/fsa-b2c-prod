@@ -28,7 +28,6 @@ export declare const definition: {
                 increaseLabel: string;
                 label: string;
                 errorMessage: string;
-                requiredMessage: string;
                 minQuantityMessage: string;
                 maxQuantityMessage: string;
             };
@@ -43,18 +42,11 @@ export declare const definition: {
                 buttonShowTitle: string;
                 buttonHideTitle: string;
             };
-            Input: {
-                errorIconAriaLabel: string;
-                successIconAriaLabel: string;
-            };
             PasswordStatusIndicator: {
                 chartTwoSymbols: string;
                 chartThreeSymbols: string;
                 chartFourSymbols: string;
                 messageLengthPassword: string;
-                iconPendingAlt: string;
-                iconSuccessAlt: string;
-                iconErrorAlt: string;
             };
             InlineAlert: {
                 dismissLabel: string;
@@ -220,7 +212,6 @@ export declare const definition: {
                 increaseLabel: string;
                 label: string;
                 errorMessage: string;
-                requiredMessage: string;
                 minQuantityMessage: string;
                 maxQuantityMessage: string;
             };
@@ -235,18 +226,11 @@ export declare const definition: {
                 buttonShowTitle: string;
                 buttonHideTitle: string;
             };
-            Input: {
-                errorIconAriaLabel: string;
-                successIconAriaLabel: string;
-            };
             PasswordStatusIndicator: {
                 chartTwoSymbols: string;
                 chartThreeSymbols: string;
                 chartFourSymbols: string;
                 messageLengthPassword: string;
-                iconPendingAlt: string;
-                iconSuccessAlt: string;
-                iconErrorAlt: string;
             };
             InlineAlert: {
                 dismissLabel: string;
@@ -414,7 +398,6 @@ export declare const getDefinitionByLanguage: (lang: Lang) => {
             increaseLabel: string;
             label: string;
             errorMessage: string;
-            requiredMessage: string;
             minQuantityMessage: string;
             maxQuantityMessage: string;
         };
@@ -429,18 +412,11 @@ export declare const getDefinitionByLanguage: (lang: Lang) => {
             buttonShowTitle: string;
             buttonHideTitle: string;
         };
-        Input: {
-            errorIconAriaLabel: string;
-            successIconAriaLabel: string;
-        };
         PasswordStatusIndicator: {
             chartTwoSymbols: string;
             chartThreeSymbols: string;
             chartFourSymbols: string;
             messageLengthPassword: string;
-            iconPendingAlt: string;
-            iconSuccessAlt: string;
-            iconErrorAlt: string;
         };
         InlineAlert: {
             dismissLabel: string;
@@ -586,3 +562,4 @@ export declare const getDefinitionByLanguage: (lang: Lang) => {
         };
     };
 };
+//# sourceMappingURL=index.d.ts.map

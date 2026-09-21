@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const ADD_PRODUCTS_TO_WISHLIST_MUTATION: string;
+//# sourceMappingURL=addProductsToWishlistMutation.d.ts.map

@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './setShippingMethods';
 export { setShippingMethods as setShippingMethodsOnCart } from './setShippingMethods';
+//# sourceMappingURL=index.d.ts.map

@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './setPaymentMethodAndPlaceOrder';
+//# sourceMappingURL=index.d.ts.map

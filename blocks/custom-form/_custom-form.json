@@ -1,0 +1,37 @@
+{
+  "definitions": [
+    {
+      "title": "Custom Form",
+      "id": "custom-form",
+      "model": "custom-form",
+      "plugins": {
+        "da": {
+          "rows": 1,
+          "columns": 2
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "custom-form",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "form-code",
+          "label": "Form Code",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "endpoint",
+          "label": "GraphQL Endpoint (override, optional)",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

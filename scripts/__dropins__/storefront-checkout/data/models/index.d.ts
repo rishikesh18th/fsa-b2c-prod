@@ -31,3 +31,4 @@ export * from './shipping-estimate';
 export * from './shipping-method';
 export * from './store-config';
 export * from './values';
+//# sourceMappingURL=index.d.ts.map

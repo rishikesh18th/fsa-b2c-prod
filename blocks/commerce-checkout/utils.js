@@ -9,14 +9,8 @@ import createModal from '../modal/modal.js';
  * Displays an overlay spinner in the specified container
  * @param {Object} loaderRef - Ref object to store the spinner component
  * @param {HTMLElement} $loader - DOM element to render the spinner in
- * @param {HTMLElement} [$loaderStatus] - Persistent live region for screen-reader announcement
  */
-export const displayOverlaySpinner = async (loaderRef, $loader, $loaderStatus) => {
-  // Kept as a separate, persistently mounted live region so the
-  // announcement isn't missed when the spinner mounts and unmounts
-  // together with the live region attached to it.
-  if ($loaderStatus) $loaderStatus.textContent = 'Placing your order…';
-
+export const displayOverlaySpinner = async (loaderRef, $loader) => {
   if (loaderRef.current) return;
 
   loaderRef.current = await UI.render(ProgressSpinner, {
@@ -28,11 +22,8 @@ export const displayOverlaySpinner = async (loaderRef, $loader, $loaderStatus) =
  * Removes the overlay spinner and cleans up references
  * @param {Object} loaderRef - Ref object containing the spinner component
  * @param {HTMLElement} $loader - DOM element containing the spinner
- * @param {HTMLElement} [$loaderStatus] - Persistent live region for screen-reader announcement
  */
-export const removeOverlaySpinner = (loaderRef, $loader, $loaderStatus) => {
-  if ($loaderStatus) $loaderStatus.textContent = '';
-
+export const removeOverlaySpinner = (loaderRef, $loader) => {
   if (!loaderRef.current) return;
 
   loaderRef.current.remove();

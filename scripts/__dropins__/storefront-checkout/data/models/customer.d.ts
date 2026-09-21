@@ -19,3 +19,4 @@ export interface Customer {
     lastName: string;
     email: string;
 }
+//# sourceMappingURL=customer.d.ts.map

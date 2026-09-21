@@ -29,3 +29,4 @@ export interface AdminAssistanceActions {
     items: AdminAssistanceAction[];
     pageInfo: AdminAssistanceActionsPageInfo;
 }
+//# sourceMappingURL=admin-assistance-actions.d.ts.map

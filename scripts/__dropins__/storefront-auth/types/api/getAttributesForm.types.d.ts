@@ -44,3 +44,4 @@ export interface GetAttributesFormResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getAttributesForm.types.d.ts.map

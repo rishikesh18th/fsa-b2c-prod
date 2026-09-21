@@ -65,7 +65,8 @@ export declare const DEFAULT_SIGN_UP_FIELDS: ({
     multiline_count: number;
     sort_order: number;
     options: never[];
-    autocomplete: string;
     validateRules?: undefined;
+    autocomplete?: undefined;
 })[];
 export declare const DEFAULT_INPUTS_PROPS: Record<string, string | ''>;
+//# sourceMappingURL=defaultCreateUserConfigs.d.ts.map

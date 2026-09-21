@@ -1,0 +1,75 @@
+.custom-form {
+  max-width: 640px;
+}
+
+.custom-form .custom-form-fields {
+  display: flex;
+  flex-direction: column;
+}
+
+.custom-form-field {
+  margin-bottom: 16px;
+}
+
+.custom-form-field label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.custom-form-field input[type="text"],
+.custom-form-field input[type="number"],
+.custom-form-field input[type="date"],
+.custom-form-field input[type="file"],
+.custom-form-field textarea,
+.custom-form-field select {
+  box-sizing: border-box;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 16px;
+  line-height: 1.4;
+  border: 1px solid var(--color-neutral-400, #ccc);
+  border-radius: 6px;
+  background: var(--color-neutral-50, #fff);
+}
+
+.custom-form-field input:focus,
+.custom-form-field textarea:focus,
+.custom-form-field select:focus {
+  outline: none;
+  border-color: var(--color-brand-500, #1473e6);
+  box-shadow: 0 0 0 2px var(--color-brand-200, rgb(20 115 230 / 25%));
+}
+
+.custom-form-options label {
+  display: inline-block;
+  font-weight: normal;
+  margin-right: 12px;
+}
+
+.custom-form-error {
+  color: var(--color-negative-500, #c00);
+  font-size: 0.85em;
+  margin-top: 4px;
+}
+
+.custom-form .custom-form-fields button[type="submit"] {
+  align-self: flex-start;
+  padding: 10px 24px;
+  border: none;
+  border-radius: 6px;
+  background: var(--color-brand-500, #1473e6);
+  color: #fff;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.custom-form .custom-form-fields button[type="submit"]:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
+.custom-form-message {
+  margin-top: 12px;
+  font-weight: 600;
+}

@@ -21,3 +21,4 @@ export { Discounts } from './Discounts';
 export { Total } from './Total';
 export { Tax } from './Tax';
 export { GiftCards } from './GiftCards';
+//# sourceMappingURL=index.d.ts.map

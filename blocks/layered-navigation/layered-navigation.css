@@ -1,0 +1,20 @@
+/* Container only - the facet groups themselves (.product-discovery-facet,
+   .product-discovery-facet__header, .product-filter-items, "Now Shopping By"
+   pills, collapse behaviour, ...) are already styled globally in
+   product-list-page.css so both blocks render facets identically. */
+.block.layered-navigation {
+  margin-block-end: var(--spacing-small);
+}
+
+.block.layered-navigation .layered-navigation__heading {
+  margin: 0 0 var(--spacing-small);
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-neutral-800);
+}
+
+@media (min-width: 900px) {
+  .block.layered-navigation {
+    max-width: 300px;
+  }
+}

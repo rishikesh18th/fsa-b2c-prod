@@ -8,3 +8,4 @@
  *******************************************************************/
 export * from './Table';
 export { Table as default } from './Table';
+//# sourceMappingURL=index.d.ts.map

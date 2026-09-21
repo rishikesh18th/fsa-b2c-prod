@@ -22,3 +22,4 @@ export declare const handleFetchError: (errors: Array<{
         category: string;
     };
 }>) => null;
+//# sourceMappingURL=fetch-error.d.ts.map

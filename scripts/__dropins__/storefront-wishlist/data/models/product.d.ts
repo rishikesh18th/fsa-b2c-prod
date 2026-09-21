@@ -79,7 +79,6 @@ interface OptionValue {
     product?: any;
 }
 interface Attribute {
-    id: string;
     label: string;
     value: string;
 }
@@ -88,3 +87,4 @@ export declare enum ProductType {
     SimpleProduct = "simple"
 }
 export {};
+//# sourceMappingURL=product.d.ts.map

@@ -1,6 +1,6 @@
 .product-details__wrapper {
   display: grid;
-  grid-template-columns: repeat(var(--grid-1-columns), 1fr);
+  grid-template-columns: repeat(var(--grid-1-columns), minmax(0, 1fr));
   column-gap: var(--grid-1-gutters);
   margin-top: var(--spacing-medium);
 }
@@ -9,8 +9,97 @@
   display: none;
 }
 
+/* Customer-service CMS block: trust/shipping badges under the product gallery */
+.product-details__customer-service:empty {
+  display: none;
+}
+
+.product-details__customer-service {
+margin: 30px 0;
+}
+
+/* CMS block ships as Magento PageBuilder markup (.pb-row > .pb-columns >
+   .pb-column). Drop the authored 24px row padding; the container spaces it. */
+.product-details__customer-service .pb-row {
+  padding: 0 !important;
+}
+
+.product-details__customer-service .pb-columns {
+  display: flex;
+  gap: var(--spacing-small);
+  flex-wrap: wrap;
+}
+
+.product-details__customer-service .pb-column {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Each column's inner div is the bordered badge: icon beside the text */
+.product-details__customer-service .pb-column > div {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xsmall);
+  padding: var(--spacing-xsmall) var(--spacing-small);
+  border: 1px solid #dbdbdb;
+  border-radius: var(--shape-border-radius-2);
+  background: var(--color-neutral-50);
+  box-shadow: 0 0 10px rgb(0 0 0 / 5%);
+  min-height: 60px;
+}
+
+.product-details__customer-service .pb-column img {
+  display: block;
+  flex: 0 0 auto;
+  width: 44px;
+  height: auto;
+  margin: 0;
+}
+
+.product-details__customer-service .pb-column h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: var(--color-neutral-800);
+}
+
+.product-details__customer-service .pb-column p {
+  margin: var(--spacing-xxsmall) 0 0;
+  font-size: 14px;
+  line-height: 1.3;
+  color: var(--color-neutral-700);
+}
+
+/* Stack the two badges on narrow phones (overrides the authored inline flex) */
+@media (max-width: 599px) {
+  .product-details__customer-service .pb-column {
+    flex-basis: 100% !important;
+  }
+}
+
+/* On mobile the gallery lives in the right column, so reveal the left column
+   solely to surface the badges and stack them after the product info. */
+@media (max-width: 899px) {
+  .product-details__wrapper {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .product-details__left-column {
+    display: block;
+    order: 2;
+  }
+
+  .product-details__left-column .product-details__gallery {
+    display: none;
+  }
+}
+
 .product-details__right-column {
   grid-column: 1 / span 4;
+  min-width: 0;
   color: var(--color-neutral-800);
 }
 
@@ -27,8 +116,110 @@
   margin-bottom: var(--spacing-medium);
 }
 
+/* SKU + stock label row, below the title */
+.product-details__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-top: calc(-1 * var(--spacing-xsmall));
+}
+
+.product-details__meta:empty {
+  display: none;
+}
+
+.product-details__sku {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: var(--color-neutral-800);
+}
+
+.pdp-price-range .dropin-price{
+  font-size: 2.4rem;
+  font-weight: 600;
+}
+
+/* In Stock / Out of Stock badge */
+.product-details__stock {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxsmall);
+  font-size: 1.4rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.product-details__stock:empty {
+  display: none;
+}
+
+.product-details__stock::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  background: center / contain no-repeat;
+}
+
+.product-details__stock--in {
+  color: #2e9e5b;
+}
+
+.product-details__stock--in::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232e9e5b'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.2 14.2-3.5-3.5 1.4-1.4 2.1 2.1 4.9-4.9 1.4 1.4-6.3 6.3z'/%3E%3C/svg%3E");
+}
+
+.product-details__stock--out {
+  color: #d32f2f;
+}
+
+.product-details__stock--out::before {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d32f2f'%3E%3Cpath d='M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm3.5 12.1-1.4 1.4L12 13.4l-2.1 2.1-1.4-1.4L10.6 12 8.5 9.9l1.4-1.4L12 10.6l2.1-2.1 1.4 1.4L13.4 12l2.1 2.1z'/%3E%3C/svg%3E");
+}
+
 .product-details__price {
   margin-top: var(--spacing-medium);
+  padding-bottom: var(--spacing-medium);
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+
+/* Quick Overview: short description with a static heading. Hidden until the
+   product actually has a short description (toggled in product-details.js). */
+.product-details__overview {
+  display: none;
+  margin-top: var(--spacing-medium);
+  padding-bottom: var(--spacing-medium);
+  border-bottom: 1px solid var(--color-neutral-300);
+}
+
+.product-details__overview--visible {
+  display: block;
+  margin-top: 0;
+}
+
+.product-details__overview-title {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-neutral-800);
+}
+
+.product-details__short-description ul {
+  margin: 0;
+  padding-left: 2rem;
+  list-style: disc;
+}
+
+.product-details__short-description li {
+  margin: var(--spacing-xxsmall) 0;
+  font-size: 1.4rem;
+}
+
+.product-details__short-description p {
+  margin: 0 0 var(--spacing-xsmall);
 }
 
 .product-details__gallery .pdp-carousel {
@@ -39,32 +230,218 @@
   max-height: 80vh;
 }
 
+.pdp-carousel__wrapper {
+    gap: 40px;
+}
+
+.pdp-header__title{
+  font-size: 2rem;
+  letter-spacing: 0;
+  font-weight: 500;
+  line-height: 1.45;
+}
+
 .product-details__gallery .pdp-overlay__content .pdp-carousel,
 .product-details__gallery .pdp-overlay__content .pdp-carousel--thumbnailsRow
 {
   max-height: unset;;
 }
 
+#yotpo-pdp-qa{
+  scroll-margin-top: 120px;
+}
 
 .product-details__configuration {
   grid-column: 1 / span 4;
   display: grid;
+
+  /* An explicit minmax(0, 1fr) column keeps a wide child (the price-break
+     table, the purchase band) from stretching the column past the viewport,
+     which used to widen everything inside it - including the related products
+     carousel, so its cards were sized against the overflowing width. */
+  grid-template-columns: minmax(0, 1fr);
+  min-width: 0;
   grid-auto-flow: row;
   gap: var(--grid-1-gutters);
   grid-auto-rows: max-content;
-  margin-bottom: var(--spacing-xxbig);
   margin-top: var(--spacing-big);
 }
 
-.product-details__buttons {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  gap: var(--grid-1-gutters);
-  grid-auto-rows: max-content;
+.product-details__related-products:empty {
+  display: none;
 }
 
-.product-details__buttons > div {
-  display: contents;
+.product-details__related-products {
+  grid-column: 1 / -1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+.product-details__wholesale-price-break:empty {
+  display: none;
+}
+
+.product-details__wholesale-price-break {
+  grid-column: 1 / -1;
+  min-width: 0;
+  max-width: 100%;
+}
+
+/* The dropin's own "Buy X for Y each and save Z%" tier text duplicates the
+   Wholesale Price Break table below the Add to Cart button, so hide it. */
+.product-details__price .pdp-price__tiers {
+  display: none;
+}
+
+/* Classic Magento customizable options (e.g. "Select Inlet Fitting"), rendered
+   by product-customizable-options.js. */
+.product-details__custom-options:empty {
+  display: none;
+}
+
+.product-details__custom-options {
+  grid-column: 1 / -1;
+  min-width: 0;
+}
+
+.product-details__custom-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-medium);
+}
+
+.product-details__custom-option-label {
+  display: block;
+  margin-bottom: var(--spacing-xsmall);
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+.product-details__custom-option-required {
+  color: var(--color-negative-500, #d0021b);
+}
+
+.product-details__custom-option-control {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 400px;
+  padding: var(--spacing-xsmall);
+  border: 1px solid var(--color-neutral-300);
+  border-radius: var(--shape-border-radius-2);
+}
+
+.product-details__custom-option-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xsmall);
+}
+
+.product-details__custom-option-choice {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xsmall);
+  font-weight: 400;
+}
+
+/* Purchase band: Qty on the left, action buttons on the right, on a light-blue
+   background — matches the PDP design. */
+.product-details__purchase {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  gap: var(--spacing-small);
+  padding: var(--spacing-small) var(--spacing-medium);
+  background-color: #bceafd;
+  border-radius: var(--shape-border-radius-2);
+      box-shadow: 0 0 10px rgb(0 0 0 / 10%);
+    border: 1px solid #dbdbdb;
+}
+
+/* "Qty" label to the left of the stepper */
+.product-details__qty-label {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  font-weight: 700;
+  color: var(--color-neutral-800);
+}
+
+/* White rounded Qty stepper pill */
+.product-details__quantity {
+  flex: 0 0 auto;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 120px;
+  height: 40px;
+  margin-left: 10px;
+  padding: 0 10px;
+  background-color: #fff;
+  border-radius: 25px;
+}
+
+/* Make the incrementer fill the pill and drop its own border/background so only
+   the white pill shows. The inner content is a 48px|auto|48px grid (~144px) that
+   overflows a 120px pill, pushing the "+" outside — shrink the ± columns to fit. */
+.product-details__quantity .dropin-incrementer,
+.product-details__quantity .dropin-incrementer__button-container,
+.product-details__quantity .dropin-incrementer__content {
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  border: 0;
+}
+
+.product-details__quantity .dropin-incrementer__content {
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+}
+
+.product-details__quantity .dropin-incrementer__decrease-button,
+.product-details__quantity .dropin-incrementer__increase-button {
+  background: transparent;
+}
+
+.product-details__quantity .dropin-incrementer__input {
+  min-width: 0;
+  background: transparent;
+}
+
+/* Hide the dropin's own field label — we render our own "Qty" label */
+.product-details__quantity .dropin-field__label {
+  display: none;
+}
+
+.product-details__buttons {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--spacing-small);
+}
+
+/* Add to Cart — dark navy. Override the dropin button's colour tokens so all
+   states (base/hover/active) follow, without fighting selector specificity. */
+.product-details__buttons__add-to-cart {
+  --color-brand-500: #0a1c5b;
+  --color-button-hover: #12277a;
+  --color-button-active: #061448;
+}
+
+/* Add to Wish List — sky blue */
+.product-details__buttons__add-to-wishlist {
+  --color-brand-500: #19a0e0;
+  --color-button-hover: #1489c2;
+  --color-button-active: #0f74a5;
+}
+
+.product-details__buttons .dropin-button {
+  text-transform: uppercase;
+  font-weight: 600;
+  white-space: nowrap;
+  border-radius: 35px;
+  letter-spacing: 0;
+  font-size: 1.6rem;
 }
 
 .product-details__attributes {
@@ -73,7 +450,7 @@
 
 @media (min-width: 900px) {
   .product-details__wrapper {
-    grid-template-columns: repeat(var(--grid-3-columns), 1fr);
+    grid-template-columns: repeat(var(--grid-3-columns), minmax(0, 1fr));
     column-gap: var(--grid-3-gutters);
     position: relative;
   }
@@ -87,10 +464,9 @@
     display: block;
     grid-column: 1 / span 6;
   }
-
+  
   .product-details__right-column {
-    grid-column: 7 / span 5;
-    padding-top: var(--spacing-medium);
+    grid-column: 7 / span 6;
   }
 
   .product-details__right-column .product-details__gallery {
@@ -98,32 +474,204 @@
   }
 
   .product-details__configuration {
-    grid-template-columns: repeat(var(--grid-1-columns), 1fr);
+    grid-template-columns: repeat(var(--grid-1-columns), minmax(0, 1fr));
     gap: var(--grid-1-gutters);
-    margin-top: var(--spacing-xxbig);
+    margin: 20px 0;
   }
 
   .product-details__options {
     grid-column: 1 / span 4;
   }
 
-  .product-details__buttons {
-    grid-column: 1 / span 4;
-  }
-
-  .product-details__quantity {
-    grid-column: 1 / span 2;
-  }
+  
 }
 
-.product-details__add-to-cart-status {
-  position: absolute;
-  clip-path: inset(50%);
-  width: 1px;
-  height: 1px;
+/* ==========================================================================
+   Product info tabs (Description / Specs / Instructions / Returns / Q&A).
+   Rendered by product-tabs.js; configured in config.json -> pdp-tabs.
+   ========================================================================== */
+
+/* Stack the block's rows (alert / wrapper / tabs) so the tabs always sit below
+   the product wrapper and can't be overlapped by the gallery. */
+.product-details {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Keep the gallery image within its column so it never spills onto the tabs. */
+.product-details__gallery img {
+  max-height: 60vh;
+  object-fit: contain;
+}
+
+.product-details .product-details__tabs {
+  clear: both;
+  width: 100%;
+  margin-top: var(--spacing-big);
+}
+
+.product-details .product-tabs__list {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 5px;
+  margin: 0 0 -1px;
   padding: 0;
-  margin: -1px;
-  border: 0;
-  overflow: hidden;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.product-details .product-tabs__list::-webkit-scrollbar {
+  display: none;
+}
+
+.product-details__buttons__add-to-wishlist button.dropin-button.dropin-button--large.dropin-button--primary.dropin-button--with-icon {
+    background: #00a6ed;
+}
+
+.product-details .product-tabs__tab {
+  flex: 0 0 auto;
+  padding: 12px 22px;
+  border-radius: 10px 10px 0 0;
+  color: #000;
+  font: var(--type-body-1-strong-font);
+  font-size: 14px;
   white-space: nowrap;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+  font-weight: 500;
+  text-transform: uppercase;
+  background: #eaeaea;
+  border: 1px solid #dbdbdb;
+}
+
+.product-details .product-tabs__tab:hover {
+  color: var(--color-neutral-900, #292929);
+}
+
+.product-details .product-tabs__tab[aria-selected="true"] {
+  background: var(--color-neutral-50, #fff);
+  color: var(--color-neutral-900, #292929);
+  border-color: var(--color-neutral-300, #e8e8e8);
+  border-bottom-color: var(--color-neutral-50, #fff);
+}
+
+.product-details .product-tabs__panels {
+  border: var(--shape-border-width-1, 1px) solid var(--color-neutral-300, #e8e8e8);
+  border-radius: 0 var(--shape-border-radius-2, 8px) var(--shape-border-radius-2, 8px) var(--shape-border-radius-2, 8px);
+  background: var(--color-neutral-50, #fff);
+  box-shadow: var(--shape-shadow-3, 0 2px 3px 0 rgb(0 0 0 / 16%));
+}
+
+.product-details .product-tabs__panel {
+  padding: var(--spacing-medium) var(--spacing-big);
+}
+
+.product-details .product-tabs__content {
+  font: var(--type-body-1-default-font);
+  line-height: 1.6;
+  color: var(--color-neutral-800, #3d3d3d);
+}
+
+.product-details .product-tabs__content p {
+  margin: 0 0 var(--spacing-small);
+}
+
+.product-details .product-tabs__content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Community Q&A tab content (see renderQaTabContent in scripts/yotpo.js) —
+   the same star-rating/Q&A-count row as the title summary, or a fallback
+   "Ask a question" link (.product-tabs__link, styled above) when the
+   product has zero reviews. */
+.product-details .yotpo-qa-tab__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+}
+
+.product-details .product-tabs__content ul,
+.product-details .product-tabs__content ol {
+  margin: 0 0 var(--spacing-small);
+  padding-left: var(--spacing-medium);
+}
+
+.product-details .product-tabs__link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-xxsmall);
+  padding: 10px 18px;
+  border-radius: var(--shape-border-radius-1, 3px);
+  background: var(--color-brand-700, #2b2b2b);
+  color: var(--color-neutral-50, #fff);
+  font: var(--type-body-1-strong-font);
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.product-details .product-tabs__link:hover {
+  background: var(--color-brand-600, #383838);
+}
+
+@media only screen and (max-width: 767px) {
+  .product-details .product-tabs__tab {
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .product-details .product-tabs__panel {
+    padding: var(--spacing-small) var(--spacing-medium);
+  }
+
+  .product-details__purchase{
+    gap: 10px;
+    padding: 15px;
+  }
+
+  .product-details__buttons .dropin-button {
+        font-size: 14px;
+        padding: 6px 15px;
+    }
+
+    .product-details__buttons__add-to-wishlist {
+        display: none;
+    }
+
+    .product-details__quantity{
+      width: 100px;
+      margin-left: 0;
+    }
+}
+
+/* CMS Block Builder content injected into a PDP tab (source: "cms-block").
+   The delivery API returns Page Builder markup (.pb-* classes + inline styles);
+   these rules keep it responsive and consistent inside the tab panel. */
+.product-tabs__content.cms-block img {
+  max-width: 100%;
+  height: auto;
+}
+
+.product-tabs__content.cms-block .pb-columns {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.product-tabs__content.cms-block .pb-column {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.product-tabs__content.cms-block .pb-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.product-tabs__content.cms-block .pb-btn-primary {
+  background: #1473e6;
+  color: #fff;
 }

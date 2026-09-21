@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './WishlistToggle';
 export { WishlistToggle as default } from './WishlistToggle';
+//# sourceMappingURL=index.d.ts.map

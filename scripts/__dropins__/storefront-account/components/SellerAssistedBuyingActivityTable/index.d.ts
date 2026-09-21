@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './SellerAssistedBuyingActivityTable';
 export { SellerAssistedBuyingActivityTable as default } from './SellerAssistedBuyingActivityTable';
+//# sourceMappingURL=index.d.ts.map

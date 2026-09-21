@@ -3,3 +3,4 @@ export interface PermissionsModel {
     admin?: boolean;
     [key: string]: boolean;
 }
+//# sourceMappingURL=permissions.d.ts.map

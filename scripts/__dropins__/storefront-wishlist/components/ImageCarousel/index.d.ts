@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from '.';
 export { ImageCarousel } from './ImageCarousel';
+//# sourceMappingURL=index.d.ts.map

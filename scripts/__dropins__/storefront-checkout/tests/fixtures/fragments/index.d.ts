@@ -18,3 +18,4 @@ export * from './available-shipping-methods';
 export * from './billing-address';
 export * from './cart';
 export * from './shipping-address';
+//# sourceMappingURL=index.d.ts.map

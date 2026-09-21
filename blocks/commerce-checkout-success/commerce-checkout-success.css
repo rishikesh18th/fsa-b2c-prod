@@ -13,7 +13,11 @@
 .order-confirmation__main {
   display: grid;
   row-gap: var(--spacing-xbig);
-  grid-column: 1 / span 7;
+  grid-column: 1 / span 8;
+}
+
+.order-confirmation__header .order-header{
+  padding: 20px;
 }
 
 .order-confirmation__aside {

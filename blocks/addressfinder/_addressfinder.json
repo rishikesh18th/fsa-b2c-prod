@@ -1,0 +1,69 @@
+{
+  "definitions": [
+    {
+      "title": "Address Finder",
+      "id": "addressfinder",
+      "model": "addressfinder",
+      "plugins": {
+        "da": {
+          "rows": 1,
+          "columns": 2
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "addressfinder",
+      "fields": [
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "label",
+          "label": "Input Label",
+          "value": "Find your address"
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "default-country",
+          "label": "Default Country (ISO alpha-2)",
+          "value": "NZ"
+        },
+        {
+          "component": "select",
+          "valueType": "string",
+          "name": "surface",
+          "label": "Surface",
+          "value": "checkout",
+          "options": [
+            { "name": "Checkout", "value": "checkout" },
+            { "name": "Customer Address", "value": "customer-address" }
+          ]
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "input-selector",
+          "label": "Input Selector (bind to existing field, optional)",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "form-selector",
+          "label": "Form Selector (country source, optional)",
+          "value": ""
+        },
+        {
+          "component": "text",
+          "valueType": "string",
+          "name": "endpoint",
+          "label": "GraphQL Endpoint (override, optional)",
+          "value": ""
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

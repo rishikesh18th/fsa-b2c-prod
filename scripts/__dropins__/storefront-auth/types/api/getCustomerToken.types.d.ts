@@ -24,3 +24,4 @@ export interface getCustomerTokenResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getCustomerToken.types.d.ts.map

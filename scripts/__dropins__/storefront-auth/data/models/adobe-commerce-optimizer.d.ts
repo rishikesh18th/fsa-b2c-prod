@@ -9,3 +9,4 @@
 export interface AdobeCommerceOptimizerModel {
     priceBookId: string;
 }
+//# sourceMappingURL=adobe-commerce-optimizer.d.ts.map

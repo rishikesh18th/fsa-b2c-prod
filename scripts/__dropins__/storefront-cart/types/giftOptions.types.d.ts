@@ -1,4 +1,5 @@
 import { WrappingImage, Price } from '../data/models';
+
 export type GiftOptionsReadOnlyViewProps = 'primary' | 'secondary';
 export type GiftOptionsViewProps = 'product' | 'order';
 export type GiftOptionsDataSourcesProps = 'cart' | 'order';
@@ -31,3 +32,4 @@ export type ProductGiftOptionsConfig = {
     };
     productGiftWrapping: GiftWrappingConfigProps[];
 };
+//# sourceMappingURL=giftOptions.types.d.ts.map

@@ -18,3 +18,4 @@ export * from './Wishlist';
 export * from './WishlistSkeleton';
 export * from './WishlistItemSkeleton';
 export { Wishlist as default } from './Wishlist';
+//# sourceMappingURL=index.d.ts.map

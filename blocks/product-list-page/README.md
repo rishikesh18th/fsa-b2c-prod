@@ -11,7 +11,8 @@ Block configuration is read via `readBlockConfig(block)`.
 | Option   | Effect |
 |----------|--------|
 | `urlpath` | When set, the block runs in **category page** mode: it filters by `categoryPath` and shows all products in that category. When absent, the block runs in **search page** mode and uses the `q` URL parameter as the search phrase. The value is also stored on the block as `data-urlpath` for use by other blocks (e.g. enrichment). |
-| `pageSize` | Number of products per page. Defaults to `9` if not set or invalid. |
+| `pageSize` | Number of products per page. If not set or invalid, falls back to Commerce Admin's Grid per Page default (`storeConfig.grid_per_page`, fetched via `store-config.js`), then to a hardcoded `9` if that fetch fails. |
+| `hide-facets` | When `true`, this block skips rendering its own inline filters panel (and the "Show Filters" toggle button) entirely. Use when a separate `layered-navigation` block on the same page renders filters instead — both mount the same shared `Facets` container off the same search state, so only one should. |
 
 ## Integration
 

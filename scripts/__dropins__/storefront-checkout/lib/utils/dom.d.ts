@@ -17,3 +17,4 @@
 export declare function getParentContainer(element: HTMLElement): HTMLElement | null;
 export declare function scrollToElement(element: HTMLElement): void;
 export declare function scrollToParentContainer(element: HTMLElement): void;
+//# sourceMappingURL=dom.d.ts.map

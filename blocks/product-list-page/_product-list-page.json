@@ -22,8 +22,13 @@
         "component": "number",
         "name": "pageSize",
         "label": "Page Size",
-        "value": 9,
-        "description": "Number of products per page (default: 9)"
+        "description": "Number of products per page. Leave blank to use Commerce Admin's Grid per Page setting."
+      },
+      {
+        "component": "boolean",
+        "name": "hide-facets",
+        "label": "Hide Facets",
+        "description": "Hide this block's own inline filters panel - use when a separate Layered Navigation block on the same page renders them instead."
       }
     ]
   }],

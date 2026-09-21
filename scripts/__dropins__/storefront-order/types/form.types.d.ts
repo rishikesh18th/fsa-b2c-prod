@@ -72,3 +72,4 @@ export interface FormInputsProps {
     onChange?: (event: Event) => void;
     onBlur?: (event: Event) => void;
 }
+//# sourceMappingURL=form.types.d.ts.map

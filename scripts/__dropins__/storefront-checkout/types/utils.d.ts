@@ -16,3 +16,4 @@
  *******************************************************************/
 export type Selector<T> = (options: Array<T>) => T | null;
 export type Filter<T> = (option: T) => boolean;
+//# sourceMappingURL=utils.d.ts.map

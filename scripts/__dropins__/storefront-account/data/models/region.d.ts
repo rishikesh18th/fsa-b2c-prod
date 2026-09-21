@@ -24,3 +24,4 @@ export interface RegionTransform {
     value: string;
     id?: string | number;
 }
+//# sourceMappingURL=region.d.ts.map

@@ -65,3 +65,4 @@ export declare const exceedLimitFixture: {
      */
     readonly isEnabled: () => boolean;
 };
+//# sourceMappingURL=session-storage.d.ts.map

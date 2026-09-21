@@ -5,10 +5,14 @@ import { tryRenderAemAssetsImage } from '@dropins/tools/lib/aem/assets.js';
 import { getMetadata } from '../../scripts/aem.js';
 import { loadFragment } from '../fragment/fragment.js';
 import { fetchPlaceholders, getProductLink, rootLink } from '../../scripts/commerce.js';
+import { fetchCmsBlock } from '../../scripts/cms-block.js';
+import { fetchCategoryGraph, categoryPathFromPathname } from '../../scripts/category.js';
 
 import renderAuthCombine from './renderAuthCombine.js';
+import initMobileMenu from './mobile-menu.js';
 import { renderAuthDropdown } from './renderAuthDropdown.js';
 import renderSellerAssistedBuyingBanner from './renderSellerAssistedBuyingBanner.js';
+import buildCategoryDropdown, { wireRailHoverIntent } from './category-menu.js';
 
 // media query match that indicates mobile/tablet width
 const isDesktop = window.matchMedia('(min-width: 900px)');
@@ -131,6 +135,38 @@ subMenuHeader.classList.add('submenu-header');
 subMenuHeader.innerHTML = '<h5 class="back-link">All Categories</h5><hr />';
 
 /**
+ * If `navSection`'s own link resolves to a real Commerce category with
+ * navigation-menu children, replaces its authored dropdown `<ul>` (if any)
+ * with one generated from live category data — see category-menu.js. Nav
+ * items that aren't category links (About Us, Reviews, Blog, …), or whose
+ * category has no menu-eligible children, are left exactly as authored.
+ * @param {Element} navSection The nav section element
+ * @param {object[]} graph flat CategoryView list (see fetchCategoryGraph)
+ */
+function replaceCategoryDropdown(navSection, graph) {
+  // The nav item's own label link always comes before any nested submenu
+  // list in document order, so the first <a> anywhere inside is always the
+  // right one — regardless of which wrapper tag DA.live authors it with
+  // (<p><a>, <strong><a>, a bare <a>, ...).
+  const navLink = navSection.querySelector('a');
+  if (!navLink) return;
+
+  let urlPath;
+  try {
+    urlPath = categoryPathFromPathname(new URL(navLink.href).pathname);
+  } catch {
+    return;
+  }
+  if (!urlPath) return;
+
+  const dynamicSubmenu = buildCategoryDropdown(graph, urlPath);
+  if (!dynamicSubmenu) return;
+
+  navSection.querySelector(':scope > ul')?.remove();
+  navSection.append(dynamicSubmenu);
+}
+
+/**
  * Sets up the submenu
  * @param {navSection} navSection The nav section element
  */
@@ -195,29 +231,50 @@ export default async function decorate(block) {
 
   const navSections = nav.querySelector('.nav-sections');
   if (navSections) {
-    navSections
-      .querySelectorAll(':scope .default-content-wrapper > ul > li')
-      .forEach((navSection) => {
-        if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
-        setupSubmenu(navSection);
-        navSection.addEventListener('click', (event) => {
-          if (event.target.tagName === 'A') return;
-          if (!isDesktop.matches) {
-            navSection.classList.toggle('active');
+    // Keep the sections block at the end of the header DOM so it renders after
+    // the brand/tools/search groups while preserving the CSS grid area mapping.
+    nav.append(navSections);
+
+    const navSectionEls = [...navSections.querySelectorAll(':scope .default-content-wrapper > ul > li')];
+
+    // Best-effort: fetchCategoryGraph() resolves to [] on failure, so a
+    // category fetch error just leaves that nav item as authored. Fetched per
+    // nav item's own top-level category — fetchCategoryGraph caches per
+    // top-level slug, so items sharing one reuse a single request — and
+    // awaited here (before the synchronous DOM pass below) so the mobile
+    // accordion setup that follows sees the final, dropdown-augmented markup.
+    const categoryGraphs = await Promise.all(navSectionEls.map((navSection) => {
+      const link = navSection.querySelector('a');
+      if (!link) return [];
+      const url = new URL(link.href, window.location);
+      if (url.origin !== window.location.origin) return [];
+      const urlPath = categoryPathFromPathname(url.pathname);
+      return urlPath ? fetchCategoryGraph(urlPath) : [];
+    }));
+
+    navSectionEls.forEach((navSection, i) => {
+      replaceCategoryDropdown(navSection, categoryGraphs[i]);
+      if (navSection.querySelector('ul')) navSection.classList.add('nav-drop');
+      setupSubmenu(navSection);
+      navSection.addEventListener('mouseenter', () => {
+        toggleAllNavSections(navSections);
+        if (isDesktop.matches) {
+          if (!navSection.classList.contains('nav-drop')) {
+            overlay.classList.remove('hide');
+            return;
           }
-        });
-        navSection.addEventListener('mouseenter', () => {
-          toggleAllNavSections(navSections);
-          if (isDesktop.matches) {
-            if (!navSection.classList.contains('nav-drop')) {
-              overlay.classList.remove('show');
-              return;
-            }
-            navSection.setAttribute('aria-expanded', 'true');
-            overlay.classList.add('show');
-          }
-        });
+          navSection.setAttribute('aria-expanded', 'true');
+          overlay.classList.add('hide');
+        }
       });
+    });
+
+    // Below 900px the nav is an accordion; on desktop this markup is unused.
+    initMobileMenu(navSections);
+
+    // Must run after setupSubmenu (above) has cloned each dropdown's <ul>
+    // into place — listeners attached before that clone would be dropped.
+    wireRailHoverIntent(navSections);
   }
 
   const navTools = nav.querySelector('.nav-tools');
@@ -225,7 +282,9 @@ export default async function decorate(block) {
   /** Wishlist */
   const wishlist = document.createRange().createContextualFragment(`
      <div class="wishlist-wrapper nav-tools-wrapper">
-       <button type="button" class="nav-wishlist-button" aria-label="Wishlist"></button>
+       <button type="button" class="nav-wishlist-button" aria-label="Wishlist">
+       <span class="sub-text">Wishlist</span>
+       </button>
        <div class="wishlist-panel nav-tools-panel"></div>
      </div>
    `);
@@ -246,9 +305,10 @@ export default async function decorate(block) {
 
   const minicart = document.createRange().createContextualFragment(`
      <div class="minicart-wrapper nav-tools-wrapper">
-       <button type="button" class="nav-cart-button" aria-label="Cart" aria-haspopup="dialog" aria-expanded="false" aria-controls="minicart-panel"></button>
-       <div class="minicart-panel nav-tools-panel" id="minicart-panel"></div>
-       <div class="nav-cart-status" role="status" aria-live="polite"></div>
+       <button type="button" class="nav-cart-button" aria-label="Cart">
+         <span class="sub-text">My Cart</span>
+       </button>
+       <div class="minicart-panel nav-tools-panel"></div>
      </div>
    `);
 
@@ -257,11 +317,6 @@ export default async function decorate(block) {
   const minicartPanel = navTools.querySelector('.minicart-panel');
 
   const cartButton = navTools.querySelector('.nav-cart-button');
-
-  // Kept mounted at all times so the item count change is reliably
-  // announced instead of being missed, since the visual badge is a
-  // `data-count` attribute rendered via CSS and isn't announced on its own.
-  const cartStatus = navTools.querySelector('.nav-cart-status');
 
   if (excludeMiniCartFromPaths.includes(window.location.pathname)) {
     cartButton.style.display = 'none';
@@ -334,170 +389,153 @@ export default async function decorate(block) {
     }
 
     togglePanel(minicartPanel, state);
-    cartButton.setAttribute(
-      'aria-expanded',
-      minicartPanel.classList.contains('nav-tools-panel--show') ? 'true' : 'false',
-    );
   }
 
   cartButton.addEventListener('click', () => toggleMiniCart(!minicartPanel.classList.contains('nav-tools-panel--show')));
 
   // Cart Item Counter
-  let previousCartQuantity;
-
   events.on('cart/data', (data) => {
-    // preload mini cart fragment if user has a cart
-    if (data) loadMiniCartFragment();
+    // Preload the mini cart fragment as soon as cart state is known (even an
+    // empty cart), not only when it already has items — its "Product(s)
+    // added to your cart" toast (see commerce-mini-cart.js) listens for
+    // cart/product/added globally, so it needs to be loaded before a
+    // shopper's very first add-to-cart, not just returning visitors with an
+    // existing cart. loadMiniCartFragment() is idempotent (see
+    // withLoadingState), so repeat cart/data events are a no-op here.
+    loadMiniCartFragment();
 
-    const totalQuantity = data?.totalQuantity ?? 0;
-
-    if (totalQuantity) {
-      cartButton.setAttribute('data-count', totalQuantity);
+    if (data?.totalQuantity) {
+      cartButton.setAttribute('data-count', data.totalQuantity);
     } else {
       cartButton.removeAttribute('data-count');
     }
-
-    // Skip the announcement for the initial value on page load so screen
-    // reader users aren't told about the cart contents before they've
-    // interacted with it; only announce actual changes.
-    if (previousCartQuantity !== undefined && previousCartQuantity !== totalQuantity) {
-      cartStatus.textContent = totalQuantity
-        ? `Cart updated, ${totalQuantity} item${totalQuantity === 1 ? '' : 's'} in cart`
-        : 'Cart updated, cart is empty';
-    }
-
-    previousCartQuantity = totalQuantity;
   }, { eager: true });
 
   /** Search */
   const searchFragment = document.createRange().createContextualFragment(`
-  <div class="search-wrapper nav-tools-wrapper">
-    <button type="button" class="nav-search-button">Search</button>
-    <div class="nav-search-input nav-search-panel nav-tools-panel">
+  <div class="nav-search nav-search-wrapper">
+    <div class="nav-search-box">
       <form id="search-bar-form"></form>
+    </div>
+    <div class="nav-search-panel nav-tools-panel">
       <div class="search-bar-result" style="display: none;"></div>
     </div>
   </div>
   `);
 
-  navTools.append(searchFragment);
+  // Search bar is displayed inline in the header, add it to the nav grid
+  nav.append(searchFragment);
 
-  const searchPanel = navTools.querySelector('.nav-search-panel');
-  const searchButton = navTools.querySelector('.nav-search-button');
-  const searchForm = searchPanel.querySelector('#search-bar-form');
-  const searchResult = searchPanel.querySelector('.search-bar-result');
+  const searchWrapper = nav.querySelector('.nav-search-wrapper');
+  const searchPanel = searchWrapper.querySelector('.nav-search-panel');
+  const searchForm = searchWrapper.querySelector('#search-bar-form');
+  const searchResult = searchWrapper.querySelector('.search-bar-result');
 
-  async function toggleSearch(state) {
-    const pageSize = 4;
-
-    if (state) {
-      await withLoadingState(searchPanel, searchButton, async () => {
-        await import('../../scripts/initializers/search.js');
-
-        // Load search components in parallel
-        const [
-          { search },
-          { render },
-          { SearchResults },
-          { provider: UI, Input, Button },
-        ] = await Promise.all([
-          import('@dropins/storefront-product-discovery/api.js'),
-          import('@dropins/storefront-product-discovery/render.js'),
-          import('@dropins/storefront-product-discovery/containers/SearchResults.js'),
-          import('@dropins/tools/components.js'),
-          import('@dropins/tools/lib.js'),
-        ]);
-
-        render.render(SearchResults, {
-          skeletonCount: pageSize,
-          scope: 'popover',
-          routeProduct: ({ urlKey, sku }) => getProductLink(urlKey, sku),
-          onSearchResult: (results) => {
-            searchResult.style.display = results.length > 0 ? 'block' : 'none';
-          },
-          slots: {
-            ProductImage: (ctx) => {
-              const { product, defaultImageProps } = ctx;
-              const anchorWrapper = document.createElement('a');
-              anchorWrapper.href = getProductLink(product.urlKey, product.sku);
-
-              tryRenderAemAssetsImage(ctx, {
-                alias: product.sku,
-                imageProps: defaultImageProps,
-                wrapper: anchorWrapper,
-                params: {
-                  width: defaultImageProps.width,
-                  height: defaultImageProps.height,
-                },
-              });
-            },
-            Footer: async (ctx) => {
-              // View all results button
-              const viewAllResultsWrapper = document.createElement('div');
-
-              const viewAllResultsButton = await UI.render(Button, {
-                children: labels.Global?.SearchViewAll,
-                variant: 'secondary',
-                href: rootLink('/search'),
-              })(viewAllResultsWrapper);
-
-              ctx.appendChild(viewAllResultsWrapper);
-
-              ctx.onChange((next) => {
-                viewAllResultsButton?.setProps((prev) => ({
-                  ...prev,
-                  href: `${rootLink('/search')}?q=${encodeURIComponent(next.variables?.phrase || '')}`,
-                }));
-              });
-            },
-          },
-        })(searchResult);
-
-        searchForm.addEventListener('submit', (e) => {
-          e.preventDefault();
-          const query = e.target.search.value;
-          if (query.length) {
-            window.location.href = `${rootLink('/search')}?q=${encodeURIComponent(query)}`;
-          }
-        });
-
-        UI.render(Input, {
-          name: 'search',
-          placeholder: labels.Global?.Search,
-          onValue: (phrase) => {
-            if (!phrase) {
-              search(null, { scope: 'popover' });
-              return;
-            }
-
-            if (phrase.length < 3) {
-              return;
-            }
-
-            search({
-              phrase,
-              pageSize,
-              filter: [
-                { attribute: 'visibility', in: ['Search', 'Catalog, Search'] },
-              ],
-            }, { scope: 'popover' });
-          },
-        })(searchForm);
-      });
-    }
-
-    togglePanel(searchPanel, state);
-    if (state) searchForm?.querySelector('input')?.focus();
+  function closeSearch() {
+    searchPanel.classList.remove('nav-tools-panel--show');
   }
 
-  searchButton.addEventListener('click', () => toggleSearch(!searchPanel.classList.contains('nav-tools-panel--show')));
+  async function initSearch() {
+    const pageSize = 4;
 
-  navTools.querySelector('.nav-search-button').addEventListener('click', () => {
-    if (isDesktop.matches) {
-      toggleAllNavSections(navSections);
-      overlay.classList.remove('show');
-    }
-  });
+    await import('../../scripts/initializers/search.js');
+
+    // Load search components in parallel
+    const [
+      { search },
+      { render },
+      { SearchResults },
+      { provider: UI, Input, Button },
+    ] = await Promise.all([
+      import('@dropins/storefront-product-discovery/api.js'),
+      import('@dropins/storefront-product-discovery/render.js'),
+      import('@dropins/storefront-product-discovery/containers/SearchResults.js'),
+      import('@dropins/tools/components.js'),
+      import('@dropins/tools/lib.js'),
+    ]);
+
+    render.render(SearchResults, {
+      skeletonCount: pageSize,
+      scope: 'popover',
+      routeProduct: ({ urlKey, sku }) => getProductLink(urlKey, sku),
+      onSearchResult: (results) => {
+        const hasResults = results.length > 0;
+        searchResult.style.display = hasResults ? 'block' : 'none';
+        searchPanel.classList.toggle('nav-tools-panel--show', hasResults);
+      },
+      slots: {
+        ProductImage: (ctx) => {
+          const { product, defaultImageProps } = ctx;
+          const anchorWrapper = document.createElement('a');
+          anchorWrapper.href = getProductLink(product.urlKey, product.sku);
+
+          tryRenderAemAssetsImage(ctx, {
+            alias: product.sku,
+            imageProps: defaultImageProps,
+            wrapper: anchorWrapper,
+            params: {
+              width: defaultImageProps.width,
+              height: defaultImageProps.height,
+            },
+          });
+        },
+        Footer: async (ctx) => {
+          // View all results button
+          const viewAllResultsWrapper = document.createElement('div');
+
+          const viewAllResultsButton = await UI.render(Button, {
+            children: labels.Global?.SearchViewAll,
+            variant: 'secondary',
+            href: rootLink('/search'),
+          })(viewAllResultsWrapper);
+
+          ctx.appendChild(viewAllResultsWrapper);
+
+          ctx.onChange((next) => {
+            viewAllResultsButton?.setProps((prev) => ({
+              ...prev,
+              href: `${rootLink('/search')}?q=${encodeURIComponent(next.variables?.phrase || '')}`,
+            }));
+          });
+        },
+      },
+    })(searchResult);
+
+    searchForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = e.target.search.value;
+      if (query.length) {
+        window.location.href = `${rootLink('/search')}?q=${encodeURIComponent(query)}`;
+      }
+    });
+
+    UI.render(Input, {
+      name: 'search',
+      placeholder: labels.Global?.SearchPlaceholder || 'Enter Keyword or Item',
+      onValue: (phrase) => {
+        if (!phrase) {
+          search(null, { scope: 'popover' });
+          closeSearch();
+          return;
+        }
+
+        if (phrase.length < 3) {
+          return;
+        }
+
+        search({
+          phrase,
+          pageSize,
+          filter: [
+            { attribute: 'visibility', in: ['Search', 'Catalog, Search'] },
+          ],
+        }, { scope: 'popover' });
+      },
+    })(searchForm);
+  }
+
+  // Initialize the always-visible search bar (header loads in the lazy phase)
+  initSearch();
 
   // Close panels when clicking outside
   document.addEventListener('click', (e) => {
@@ -520,8 +558,8 @@ export default async function decorate(block) {
       toggleMiniCart(false);
     }
 
-    if (!searchPanel.contains(e.target) && !searchButton.contains(e.target)) {
-      toggleSearch(false);
+    if (!searchWrapper.contains(e.target)) {
+      closeSearch();
     }
   });
 
@@ -529,6 +567,16 @@ export default async function decorate(block) {
   navWrapper.className = 'nav-wrapper';
   navWrapper.append(nav);
   block.append(navWrapper);
+
+  // Header-top announcement bar rendered from the `header-top` CMS block, sits
+  // above the nav. Best-effort and non-blocking: hidden (empty) until filled,
+  // and skipped entirely if the block isn't configured or the fetch fails.
+  const headerTopBar = document.createElement('div');
+  headerTopBar.className = 'header-top-bar';
+  block.prepend(headerTopBar);
+  fetchCmsBlock('header-top').then((html) => {
+    if (html) headerTopBar.innerHTML = html; // sanitized server-side by the CMS Block Builder
+  });
 
   navWrapper.addEventListener('mouseout', (e) => {
     if (isDesktop.matches && !nav.contains(e.relatedTarget)) {

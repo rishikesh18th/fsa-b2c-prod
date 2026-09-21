@@ -1,0 +1,23 @@
+{
+  "definitions": [{
+    "title": "Layered Navigation",
+    "id": "layered-navigation",
+    "model": "layered-navigation",
+    "plugins": {
+      "da": {
+        "type": "key-value-block"
+      }
+    }
+  }],
+  "models": [{
+    "id": "layered-navigation",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Heading (optional)"
+      }
+    ]
+  }],
+  "filters": []
+}

@@ -17,3 +17,4 @@
 export * from './classifiers';
 export * from './customErrors';
 export * from './mapErrorToCode';
+//# sourceMappingURL=index.d.ts.map

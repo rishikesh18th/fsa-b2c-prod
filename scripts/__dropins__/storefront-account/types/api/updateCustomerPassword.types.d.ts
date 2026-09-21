@@ -28,3 +28,4 @@ export interface ChangeCustomerPasswordResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=updateCustomerPassword.types.d.ts.map

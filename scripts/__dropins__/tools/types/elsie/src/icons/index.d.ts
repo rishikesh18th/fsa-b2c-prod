@@ -47,3 +47,4 @@ export { default as Wallet } from './Wallet.svg';
 export { default as Warning } from './Warning.svg';
 export { default as WarningFilled } from './WarningFilled.svg';
 export { default as WarningWithCircle } from './WarningWithCircle.svg';
+//# sourceMappingURL=index.d.ts.map

@@ -7,6 +7,7 @@ import {
   checkIsAuthenticated,
   rootLink,
 } from '../../scripts/commerce.js';
+import { enhanceAemAddressForms } from '../addressfinder/addressfinder.js';
 
 // Initialize
 import '../../scripts/initializers/account.js';
@@ -25,5 +26,8 @@ export default async function decorate(block) {
       withActionsInFullSizeView: true,
       routeAddressesPage: () => rootLink(CUSTOMER_ADDRESS_PATH),
     })(block);
+
+    // Bind AddressFinder autocomplete to the address form (add/edit mode).
+    enhanceAemAddressForms(block, { surface: 'customer-address', defaultCountry: 'AU' });
   }
 }

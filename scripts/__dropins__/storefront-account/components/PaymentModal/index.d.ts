@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './PaymentModal';
 export { PaymentModal as default } from './PaymentModal';
+//# sourceMappingURL=index.d.ts.map

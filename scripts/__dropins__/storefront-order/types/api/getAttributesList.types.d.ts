@@ -40,3 +40,4 @@ export interface GetAttributesListResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getAttributesList.types.d.ts.map

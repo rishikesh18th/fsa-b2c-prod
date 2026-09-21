@@ -21,3 +21,4 @@ export * from './CustomerInformation';
 export * from './SellerAssistedBuyingSettings';
 export * from './SellerAssistedBuyingActivity';
 export * from './PaymentMethods';
+//# sourceMappingURL=index.d.ts.map

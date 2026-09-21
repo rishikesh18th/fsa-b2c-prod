@@ -20,10 +20,13 @@ import ProductPrice from '@dropins/storefront-pdp/containers/ProductPrice.js';
 import ProductShortDescription from '@dropins/storefront-pdp/containers/ProductShortDescription.js';
 import ProductOptions from '@dropins/storefront-pdp/containers/ProductOptions.js';
 import ProductQuantity from '@dropins/storefront-pdp/containers/ProductQuantity.js';
-import ProductDescription from '@dropins/storefront-pdp/containers/ProductDescription.js';
-import ProductAttributes from '@dropins/storefront-pdp/containers/ProductAttributes.js';
 import ProductGallery from '@dropins/storefront-pdp/containers/ProductGallery.js';
 import ProductGiftCardOptions from '@dropins/storefront-pdp/containers/ProductGiftCardOptions.js';
+import renderProductTabs, { prefetchCmsBlockTabs } from './product-tabs.js';
+import renderBreadcrumb from './breadcrumb.js';
+import renderCustomizableOptions from './product-customizable-options.js';
+import { fetchCmsBlock } from '../../scripts/cms-block.js';
+import { loadCSS } from '../../scripts/aem.js';
 
 // Libs
 import {
@@ -37,6 +40,9 @@ import {
 import { IMAGES_SIZES } from '../../scripts/initializers/pdp.js';
 import '../../scripts/initializers/cart.js';
 import '../../scripts/initializers/wishlist.js';
+
+// Identifier of the CMS block rendered under the gallery on the PDP.
+const CUSTOMER_SERVICE_BLOCK = 'customer-service';
 
 /**
  * Checks if the page has prerendered product JSON-LD data
@@ -71,17 +77,11 @@ function updateAddToCartButtonText(addToCartInstance, inCart, labels) {
   }
 }
 
-/**
- * Formats numeric attribute values for display (e.g., "10.000000" → "10").
- * Non-numeric values are returned as-is.
- */
-function formatNumericAttributeValue(value) {
-  const trimmed = value.trim();
-  if (!/^[+-]?\d+(\.\d+)?$/.test(trimmed)) return value;
-  return new Intl.NumberFormat(document.documentElement.lang).format(Number(trimmed));
-}
-
 export default async function decorate(block) {
+  // Fire off as early as possible: these tabs' CMS Block Builder identifiers
+  // don't depend on product data, so there's no reason to wait for pdp/data.
+  prefetchCmsBlockTabs();
+
   const eventProduct = events.lastPayload('pdp/data') ?? null;
   // bug: the pdp sends an object with event data even if product is not found.
   const product = eventProduct?.sku ? eventProduct : null;
@@ -98,53 +98,162 @@ export default async function decorate(block) {
   // State to track if the current product/variant is out of stock
   let isOutOfStock = false;
 
+  // State to track validity of the classic Magento customizable options
+  // (rendered separately below, since Catalog Service's ProductOptions
+  // container doesn't expose them). Required options block Add to Cart
+  // just like an invalid swatch selection does.
+  let isCustomOptionsValid = true;
+
+  // Related products checked in the "Related Products" carousel below,
+  // added alongside this product when Add to Cart is clicked.
+  let relatedSelection = [];
+  events.on('related-products/selection', (items) => {
+    relatedSelection = items || [];
+  });
+
   // Layout
   const fragment = document.createRange().createContextualFragment(`
     <div class="product-details__alert"></div>
     <div class="product-details__wrapper">
       <div class="product-details__left-column">
         <div class="product-details__gallery"></div>
+        <div class="product-details__customer-service"></div>
       </div>
       <div class="product-details__right-column">
         <div class="product-details__header"></div>
+        <div class="product-details__meta">
+          <span class="product-details__sku"></span>
+          <span class="product-details__stock"></span>
+        </div>
         <div class="product-details__price"></div>
         <div class="product-details__gallery"></div>
-        <div class="product-details__short-description"></div>
+        <div class="product-details__overview">
+          <h2 class="product-details__overview-title">${labels.Global?.QuickOverview || 'Quick Overview'}</h2>
+          <div class="product-details__short-description"></div>
+        </div>
         <div class="product-details__gift-card-options"></div>
         <div class="product-details__configuration">
           <div class="product-details__options"></div>
-          <div class="product-details__quantity"></div>
-          <div class="product-details__buttons">
-            <div class="product-details__buttons__add-to-cart"></div>
-            <div class="product-details__buttons__add-to-wishlist"></div>
+          <div class="product-details__custom-options"></div>
+          <div class="product-details__related-products"></div>
+          <div class="product-details__wholesale-price-break"></div>
+          <div class="product-details__purchase">
+            <label class="label product-details__qty-label" for="qty"><span>Qty</span></label>
+            <div class="product-details__quantity"></div>
+            <div class="product-details__buttons">
+              <div class="product-details__buttons__add-to-cart"></div>
+              <div class="product-details__buttons__add-to-wishlist"></div>
+            </div>
           </div>
-          <div class="product-details__add-to-cart-status" role="status" aria-live="polite"></div>
         </div>
-        <div class="product-details__description"></div>
-        <div class="product-details__attributes"></div>
       </div>
     </div>
+    <div class="product-details__tabs"></div>
   `);
 
   const $alert = fragment.querySelector('.product-details__alert');
   const $gallery = fragment.querySelector('.product-details__gallery');
   const $header = fragment.querySelector('.product-details__header');
+  const $sku = fragment.querySelector('.product-details__sku');
+  const $stock = fragment.querySelector('.product-details__stock');
   const $price = fragment.querySelector('.product-details__price');
   const $galleryMobile = fragment.querySelector('.product-details__right-column .product-details__gallery');
+  const $overview = fragment.querySelector('.product-details__overview');
   const $shortDescription = fragment.querySelector('.product-details__short-description');
   const $options = fragment.querySelector('.product-details__options');
+  const $customOptions = fragment.querySelector('.product-details__custom-options');
+  const $relatedProducts = fragment.querySelector('.product-details__related-products');
+  const $wholesalePriceBreak = fragment.querySelector('.product-details__wholesale-price-break');
   const $quantity = fragment.querySelector('.product-details__quantity');
   const $giftCardOptions = fragment.querySelector('.product-details__gift-card-options');
   const $addToCart = fragment.querySelector('.product-details__buttons__add-to-cart');
   const $wishlistToggleBtn = fragment.querySelector('.product-details__buttons__add-to-wishlist');
-  // Kept mounted at all times so the "Adding to Cart" status is reliably
-  // announced instead of relying on the button's text/disabled state
-  // changing, which isn't announced by screen readers on its own.
-  const $addToCartStatus = fragment.querySelector('.product-details__add-to-cart-status');
-  const $description = fragment.querySelector('.product-details__description');
-  const $attributes = fragment.querySelector('.product-details__attributes');
+  const $customerService = fragment.querySelector('.product-details__customer-service');
+  const $tabs = fragment.querySelector('.product-details__tabs');
 
   block.replaceChildren(fragment);
+
+  // Breadcrumb (Home > ancestor categories > product name), rendered as the
+  // block's first child, above the gallery/details. Rendered once from the
+  // first product payload; category data doesn't change across variants.
+  const $breadcrumb = document.createElement('div');
+  block.prepend($breadcrumb);
+  let breadcrumbRendered = false;
+  events.on('pdp/data', (data) => {
+    if (breadcrumbRendered || !data?.sku) return;
+    breadcrumbRendered = true;
+    renderBreadcrumb($breadcrumb, data);
+  }, { eager: true });
+
+  // Related items are managed against each product in Commerce Admin. Load the
+  // carousel here instead of requiring authors to add a second block to every
+  // PDP, which also guarantees its placement above the purchase controls.
+  const codeBasePath = window.hlx?.codeBasePath || '';
+  const relatedProductsBlock = document.createElement('div');
+  relatedProductsBlock.className = 'related-products';
+  $relatedProducts.append(relatedProductsBlock);
+  loadCSS(`${codeBasePath}/blocks/related-products/related-products.css`).catch((error) => {
+    // eslint-disable-next-line no-console
+    console.error('Related products: failed to load styles', error);
+  });
+  import('../related-products/related-products.js')
+    .then(({ default: decorateRelatedProducts }) => decorateRelatedProducts(relatedProductsBlock))
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Related products: failed to initialize', error);
+    });
+
+  // Wholesale Price Break table, shown above the Qty / Add to Cart controls
+  // whenever the current product (or resolved variant) has tier prices.
+  const wholesalePriceBreakBlock = document.createElement('div');
+  wholesalePriceBreakBlock.className = 'wholesale-price-break';
+  $wholesalePriceBreak.append(wholesalePriceBreakBlock);
+  loadCSS(`${codeBasePath}/blocks/wholesale-price-break/wholesale-price-break.css`).catch((error) => {
+    // eslint-disable-next-line no-console
+    console.error('Wholesale price break: failed to load styles', error);
+  });
+  import('../wholesale-price-break/wholesale-price-break.js')
+    .then((mod) => mod.default(wholesalePriceBreakBlock))
+    .catch((error) => {
+      // eslint-disable-next-line no-console
+      console.error('Wholesale price break: failed to initialize', error);
+    });
+
+  // Customer-service CMS block (e.g. shipping / trust badges) rendered under the
+  // gallery in the left column. Authored as a CMS block in the CMS Block Builder
+  // with the identifier below. Best-effort and non-blocking: if it isn't
+  // configured or the fetch fails, the (empty) container simply stays hidden.
+  fetchCmsBlock(CUSTOMER_SERVICE_BLOCK).then((html) => {
+    if (html) {
+      $customerService.classList.add('cms-block');
+      $customerService.innerHTML = html; // sanitized server-side by the CMS Block Builder
+    }
+  });
+
+  // Product info tabs (Description / Specs / Instructions / Returns / Q&A),
+  // configured in config.json -> pdp-tabs. `eager: true` replays the current
+  // product immediately (if loaded) and re-renders on variant/data updates.
+  events.on('pdp/data', (p) => {
+    if (p && p.sku) renderProductTabs($tabs, p);
+  }, { eager: true });
+
+  // SKU + In Stock / Out of Stock label meta row. Kept in sync with the current
+  // product/variant; `inStock` is treated as true unless explicitly false.
+  events.on('pdp/data', (data) => {
+    if (!data?.sku) return;
+    $sku.textContent = `${labels.Global?.Sku || 'SKU'}: ${data.sku}`;
+    const inStock = data.inStock !== false;
+    $stock.textContent = inStock
+      ? (labels.Global?.InStock || 'In Stock')
+      : (labels.Global?.OutOfStock || 'Out of Stock');
+    $stock.classList.toggle('product-details__stock--in', inStock);
+    $stock.classList.toggle('product-details__stock--out', !inStock);
+
+    // Show the "Quick Overview" heading + divider only when the product has a
+    // short description (ignore markup-only/empty values).
+    const hasShortDescription = !!(data.shortDescription || '').replace(/<[^>]*>/g, '').trim();
+    $overview.classList.toggle('product-details__overview--visible', hasShortDescription);
+  }, { eager: true });
 
   const gallerySlots = {
     CarouselThumbnail: (ctx) => {
@@ -178,8 +287,6 @@ export default async function decorate(block) {
     _options,
     _quantity,
     _giftCardOptions,
-    _description,
-    _attributes,
     wishlistToggleBtn,
   ] = await Promise.all([
     // Gallery (Mobile)
@@ -212,8 +319,8 @@ export default async function decorate(block) {
       slots: gallerySlots,
     })($gallery),
 
-    // Header
-    pdpRendered.render(ProductHeader, {})($header),
+    // Header (SKU is rendered by our own meta row below, so hide the dropin's)
+    pdpRendered.render(ProductHeader, { hideSku: true })($header),
 
     // Price
     pdpRendered.render(ProductPrice, {})($price),
@@ -240,17 +347,14 @@ export default async function decorate(block) {
     // Configuration  Gift Card Options
     pdpRendered.render(ProductGiftCardOptions, {})($giftCardOptions),
 
-    // Description
-    pdpRendered.render(ProductDescription, {})($description),
-
-    // Attributes
-    pdpRendered.render(ProductAttributes, {
-      formatValue: formatNumericAttributeValue,
-    })($attributes),
-
-    // Wishlist button - WishlistToggle Container
+    // Wishlist button - WishlistToggle Container (labeled primary button so it
+    // shows the "Add to Wish List" text + heart icon like the design)
     wishlistRender.render(WishlistToggle, {
       product,
+      variant: 'primary',
+      size: 'large',
+      labelToWishlist: labels.Global?.AddToWishlist || 'Add to Wish List',
+      labelWishlisted: labels.Global?.RemoveFromWishlist || 'In Wish List',
     })($wishlistToggleBtn),
   ]);
 
@@ -258,6 +362,8 @@ export default async function decorate(block) {
   const addToCart = await UI.render(Button, {
     children: labels.Global?.AddProductToCart,
     icon: h(Icon, { source: 'Cart' }),
+    variant: 'primary',
+    size: 'large',
     onClick: async () => {
       const buttonActionText = isUpdateMode
         ? labels.Global?.UpdatingInCart
@@ -268,11 +374,25 @@ export default async function decorate(block) {
           children: buttonActionText,
           disabled: true,
         }));
-        $addToCartStatus.textContent = buttonActionText ?? 'Adding to Cart';
 
         // get the current selection values
         const values = pdpApi.getProductConfigurationValues();
-        const valid = pdpApi.isProductConfigurationValid();
+        const valid = pdpApi.isProductConfigurationValid() && isCustomOptionsValid;
+
+        //  Merge in the classic customizable options (e.g. "Select Inlet
+        // Fitting"), which live outside the dropin's own configuration state.
+        const { customOptionsApi } = $customOptions;
+        const mergedValues = customOptionsApi ? {
+          ...values,
+          optionsUIDs: [
+            ...(values.optionsUIDs || []),
+            ...customOptionsApi.getSelectedOptionUids(),
+          ],
+          enteredOptions: [
+            ...(values.enteredOptions || []),
+            ...customOptionsApi.getEnteredOptions(),
+          ],
+        } : values;
 
         // add or update the product in the cart
         if (valid) {
@@ -282,10 +402,10 @@ export default async function decorate(block) {
               '@dropins/storefront-cart/api.js'
             );
 
-            await updateProductsFromCart([{ ...values, uid: itemUidFromUrl }]);
+            await updateProductsFromCart([{ ...mergedValues, uid: itemUidFromUrl }]);
 
             // --- START REDIRECT ON UPDATE ---
-            const updatedSku = values?.sku;
+            const updatedSku = mergedValues?.sku;
             if (updatedSku) {
               const cartRedirectUrl = new URL(
                 rootLink('/cart'),
@@ -306,7 +426,7 @@ export default async function decorate(block) {
           const { addProductsToCart } = await import(
             '@dropins/storefront-cart/api.js'
           );
-          await addProductsToCart([{ ...values }]);
+          await addProductsToCart([{ ...mergedValues }, ...relatedSelection]);
         }
 
         // reset any previous alerts if successful
@@ -337,20 +457,46 @@ export default async function decorate(block) {
           ...prev,
           disabled: isOutOfStock,
         }));
-        $addToCartStatus.textContent = '';
       }
     },
   })($addToCart);
 
   // Lifecycle Events
+  let isConfigValid = true;
+  const updateAddToCartDisabled = () => {
+    addToCart.setProps((prev) => ({
+      ...prev,
+      disabled: isOutOfStock || !isConfigValid || !isCustomOptionsValid,
+    }));
+  };
+
   events.on('pdp/data', (data) => {
     isOutOfStock = data?.inStock === false;
-    addToCart.setProps((prev) => ({ ...prev, disabled: isOutOfStock }));
+    updateAddToCartDisabled();
   }, { eager: true });
 
   events.on('pdp/valid', (valid) => {
     // update add to cart button disabled state based on product selection validity and stock status
-    addToCart.setProps((prev) => ({ ...prev, disabled: isOutOfStock || !valid }));
+    isConfigValid = valid;
+    updateAddToCartDisabled();
+  }, { eager: true });
+
+  // Classic Magento customizable options (e.g. "Select Inlet Fitting"). Keyed
+  // off sku so a variant-only pdp/data update doesn't reset in-progress
+  // selections by re-rendering the form.
+  let customOptionsSku = null;
+  events.on('pdp/data', (data) => {
+    if (!data?.sku || data.sku === customOptionsSku) return;
+    customOptionsSku = data.sku;
+    renderCustomizableOptions($customOptions, data).then(() => {
+      const { customOptionsApi } = $customOptions;
+      isCustomOptionsValid = customOptionsApi ? customOptionsApi.isValid() : true;
+      customOptionsApi?.onValidityChange((valid) => {
+        isCustomOptionsValid = valid;
+        updateAddToCartDisabled();
+      });
+      updateAddToCartDisabled();
+    });
   }, { eager: true });
 
   // Handle option changes
@@ -486,20 +632,15 @@ async function setJsonLdProduct(product) {
   };
 
   if (variants.length > 1) {
-    ldJson.offers.push(...variants
-      // A variant can come back without a resolved product (e.g. an
-      // unavailable option combination); skip those so JSON-LD generation
-      // doesn't throw on null property access.
-      .filter((variant) => variant.product)
-      .map((variant) => ({
-        '@type': 'Offer',
-        name: variant.product.name,
-        image: variant.product.images?.[0]?.url,
-        price: variant.product.price?.final?.amount?.value,
-        priceCurrency: variant.product.price?.final?.amount?.currency,
-        availability: variant.product.inStock ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock',
-        sku: variant.product.sku,
-      })));
+    ldJson.offers.push(...variants.map((variant) => ({
+      '@type': 'Offer',
+      name: variant.product.name,
+      image: variant.product.images[0]?.url,
+      price: variant.product.price.final.amount.value,
+      priceCurrency: variant.product.price.final.amount.currency,
+      availability: variant.product.inStock ? 'http://schema.org/InStock' : 'http://schema.org/OutOfStock',
+      sku: variant.product.sku,
+    })));
   } else {
     ldJson.offers.push({
       '@type': 'Offer',

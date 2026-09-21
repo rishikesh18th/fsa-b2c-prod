@@ -59,6 +59,30 @@
           {
             "name": "Highlight",
             "value": "highlight"
+          },
+          {
+            "name": "ProductRow",
+            "value": "productrow"
+          },
+          {
+            "name": "WhyChooseUs",
+            "value": "whychooseus"
+          },
+          {
+            "name": "TwoColumn",
+            "value": "twocolumn"
+          },
+          {
+            "name": "BlogSection",
+            "value": "blogsection"
+          },
+          {
+            "name": "AboutUs",
+            "value": "aboutus"
+          },
+          {
+            "name": "FooterSection",
+            "value": "footersection"
           }
         ]
       },
@@ -176,6 +200,63 @@
         "label": "Text",
         "valueType": "string",
         "required": true
+      }
+    ]
+  },
+  {
+    "id": "addressfinder",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "label",
+        "label": "Input Label",
+        "value": "Find your address"
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "default-country",
+        "label": "Default Country (ISO alpha-2)",
+        "value": "NZ"
+      },
+      {
+        "component": "select",
+        "valueType": "string",
+        "name": "surface",
+        "label": "Surface",
+        "value": "checkout",
+        "options": [
+          {
+            "name": "Checkout",
+            "value": "checkout"
+          },
+          {
+            "name": "Customer Address",
+            "value": "customer-address"
+          }
+        ]
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "input-selector",
+        "label": "Input Selector (bind to existing field, optional)",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "form-selector",
+        "label": "Form Selector (country source, optional)",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "endpoint",
+        "label": "GraphQL Endpoint (override, optional)",
+        "value": ""
       }
     ]
   },
@@ -347,6 +428,16 @@
         "component": "boolean",
         "name": "undo-remove-item",
         "label": "Undo Remove Item"
+      },
+      {
+        "component": "boolean",
+        "name": "enable-quantity-update",
+        "label": "Enable Quantity Update"
+      },
+      {
+        "component": "boolean",
+        "name": "enable-item-removal",
+        "label": "Enable Item Removal"
       }
     ]
   },
@@ -377,6 +468,25 @@
         "component": "text",
         "name": "start-shopping-url",
         "label": "Start Shopping URL"
+      }
+    ]
+  },
+  {
+    "id": "custom-form",
+    "fields": [
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "form-code",
+        "label": "Form Code",
+        "value": ""
+      },
+      {
+        "component": "text",
+        "valueType": "string",
+        "name": "endpoint",
+        "label": "GraphQL Endpoint (override, optional)",
+        "value": ""
       }
     ]
   },
@@ -448,6 +558,16 @@
     ]
   },
   {
+    "id": "layered-navigation",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Heading (optional)"
+      }
+    ]
+  },
+  {
     "id": "product-details",
     "fields": [
       {
@@ -471,8 +591,13 @@
         "component": "number",
         "name": "pageSize",
         "label": "Page Size",
-        "value": 9,
-        "description": "Number of products per page (default: 9)"
+        "description": "Number of products per page. Leave blank to use Commerce Admin's Grid per Page setting."
+      },
+      {
+        "component": "boolean",
+        "name": "hide-facets",
+        "label": "Hide Facets",
+        "description": "Hide this block's own inline filters panel - use when a separate Layered Navigation block on the same page renders them instead."
       }
     ]
   },
@@ -484,6 +609,21 @@
         "name": "recId",
         "label": "Rec ID",
         "required": true
+      },
+      {
+        "component": "text",
+        "name": "currentSku",
+        "label": "Current SKU"
+      }
+    ]
+  },
+  {
+    "id": "related-products",
+    "fields": [
+      {
+        "component": "text",
+        "name": "heading",
+        "label": "Heading"
       },
       {
         "component": "text",

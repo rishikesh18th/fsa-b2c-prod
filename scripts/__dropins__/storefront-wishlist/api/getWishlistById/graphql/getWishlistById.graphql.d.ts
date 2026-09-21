@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const GET_WISHLIST_BY_ID_QUERY: string;
+//# sourceMappingURL=getWishlistById.graphql.d.ts.map

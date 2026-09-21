@@ -1,0 +1,100 @@
+.yotpo-reviews {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 16px;
+}
+
+.yotpo-reviews__widget {
+    min-height: 200px;
+}
+
+/*
+ * Native Yotpo "Testimonials" (site-reviews-tab) widget — see renderSiteReviews
+ * in scripts/yotpo.js. Its default presentation is a floating "★" tab that
+ * opens a modal; these overrides make it render inline instead, matching the
+ * live Magento /reviews page exactly (confirmed against that page's own
+ * computed styles for the same elements). Everything else (stars, avatars,
+ * vote buttons, share icons, pagination) is the widget's own real styling —
+ * intentionally not restyled here.
+ */
+/* stylelint-disable-next-line selector-id-pattern -- fixed id from Yotpo's own script, not ours to rename */
+#yotpo-testimonials-custom-tab #yotpo_testimonials_btn {
+    display: none;
+}
+
+#yotpo-testimonials-custom-tab #yotpo-testimonials.yotpo-modal {
+    display: block;
+    position: static;
+}
+
+#yotpo-testimonials-custom-tab .yotpo-modal-mask {
+    position: static;
+    height: 0;
+    background: transparent;
+}
+
+#yotpo-testimonials-custom-tab .yotpo-modal-dialog {
+    position: static;
+    display: block;
+}
+
+#yotpo-testimonials-custom-tab .yotpo-modal-header {
+    display: none;
+}
+
+/* Per-product "all reviews on one page" view (renderAllReviews) — used when
+   the yotpo-reviews block has a `productid` row configured. */
+.yotpo-reviews .yotpo-custom-summary {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--color-neutral-200, #e5e5e5);
+}
+
+.yotpo-reviews .yotpo-custom-summary__score {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.yotpo-reviews .yotpo-custom-summary .yotpo-custom-stars {
+    font-size: 20px;
+}
+
+.yotpo-reviews .yotpo-custom-review-list {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.yotpo-reviews .yotpo-custom-review {
+    padding-bottom: 20px;
+    border-bottom: 1px solid var(--color-neutral-200, #e5e5e5);
+}
+
+.yotpo-reviews .yotpo-custom-review__header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 6px;
+}
+
+.yotpo-reviews .yotpo-custom-review__title {
+    margin: 0;
+    font-size: 16px;
+}
+
+.yotpo-reviews .yotpo-custom-review__content {
+    margin: 0 0 8px;
+    color: var(--color-neutral-700, #373330);
+}
+
+.yotpo-reviews .yotpo-custom-review__meta {
+    font-size: 13px;
+    color: var(--color-neutral-500, #6b6d76);
+}
+
+.yotpo-reviews .yotpo-custom-empty {
+    color: var(--color-neutral-500, #6b6d76);
+}

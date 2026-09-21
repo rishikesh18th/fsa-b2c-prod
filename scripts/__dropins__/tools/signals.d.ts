@@ -1,1 +1,1 @@
-export * from '@preact/signals';
+export * from './types/elsie/@preact/signals'

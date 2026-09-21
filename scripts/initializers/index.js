@@ -41,12 +41,25 @@ const persistCartDataInSession = (data) => {
   }
 };
 
+// Responsive srcset builders (e.g. the PLP tile grid) only ever supply
+// `width` per breakpoint; the dropins' own image-param mapper still invokes
+// the `height` mapper with `value === undefined` for every image so the
+// unset param can be filtered out. Math.floor(undefined) is NaN — not
+// null/undefined — so it survived that filter and landed in the URL as a
+// literal "height=NaN", breaking (near-1x1) every product image using it.
+// Guarding here keeps the intended int-rounding for real values while
+// letting an omitted dimension stay omitted instead of becoming "NaN".
+const floorOrOmit = (key) => (value) => [
+  key,
+  Number.isFinite(value) ? Math.floor(value) : undefined,
+];
+
 const setupAemAssetsImageParams = () => {
   if (isAemAssetsEnabled()) {
     // Convert decimal values to integers for AEM Assets compatibility
     initializers.setImageParamKeys({
-      width: (value) => ['width', Math.floor(value)],
-      height: (value) => ['height', Math.floor(value)],
+      width: floorOrOmit('width'),
+      height: floorOrOmit('height'),
       quality: 'quality',
       auto: 'auto',
       crop: 'crop',
@@ -111,7 +124,7 @@ export default async function initializeDropins() {
         recaptcha.enableLogger(true);
         return recaptcha.setConfig();
       });
-    }, { eager: true });
+    });
   };
 
   // re-initialize on prerendering changes

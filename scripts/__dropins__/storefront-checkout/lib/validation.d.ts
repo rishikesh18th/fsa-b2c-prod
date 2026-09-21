@@ -8,3 +8,4 @@ export declare const htmlPatterns: {
     EMAIL: string;
     NOT_EMPTY: string;
 };
+//# sourceMappingURL=validation.d.ts.map

@@ -41,3 +41,4 @@ export interface PaymentModalProps {
     variant?: 'secondary' | 'primary';
     minifiedView?: boolean;
 }
+//# sourceMappingURL=paymentCard.types.d.ts.map

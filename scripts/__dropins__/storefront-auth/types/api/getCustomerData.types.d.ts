@@ -30,3 +30,4 @@ export interface getCustomerDataResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getCustomerData.types.d.ts.map

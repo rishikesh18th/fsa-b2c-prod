@@ -1,0 +1,253 @@
+
+.related-products {
+  /* Card widths are derived from this, so keep the two in sync via the var.
+     10px on mobile matches the listing page grid; 1rem from 600px up. */
+  --related-products-gap: 10px;
+}
+
+.related-products .related-products__heading {
+  margin: 0 0 .5rem;
+  text-align: center;
+}
+
+.related-products .related-products__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: .5rem;
+  margin: 0 0 1rem;
+}
+
+.related-products .related-products__toolbar-label {
+  color: var(--color-neutral-700, #555);
+  font-size: 14px;
+  letter-spacing: 0;
+}
+
+.related-products .related-products__select-all {
+  padding: 6px 15px;
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  text-transform: uppercase;
+  background: #00a5e5;
+  border: 0;
+  border-radius: var(--shape-border-radius-3, 24px);
+  cursor: pointer;
+}
+
+.related-products .related-products__select-all:hover {
+  background: #008bc4;
+}
+
+.related-products .related-products__carousel {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.related-products .related-products__track {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  flex-wrap: nowrap;
+  gap: var(--related-products-gap);
+  margin: 0;
+  padding: 0 0 .25rem;
+  list-style: none;
+  overflow-x: auto;
+  scrollbar-width: none;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.related-products .related-products__track::-webkit-scrollbar {
+  display: none;
+}
+
+.related-products .related-products__item {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex: 0 0 calc((100% - var(--related-products-gap)) / 2);
+  min-width: 0;
+  flex-direction: column;
+  background: transparent linear-gradient(180deg, #fff 0%, #fefefe 55%, #fcfcfc 64%, #eef3f6 100%) 0% 0% no-repeat padding-box;
+  border-radius: 15px;
+  overflow: hidden;
+  scroll-snap-align: start;
+}
+
+.related-products .related-products__track:hover .related-products .related-products__item {
+  background: #fff;
+}
+
+.related-products .related-products__link {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+}
+
+.related-products .related-products__link:hover{
+  text-decoration: none;
+}
+
+.related-products .related-products__media {
+  display: block;
+  position: relative;
+  aspect-ratio: 1 / 1;
+  background: var(--color-neutral-100, #f5f5f5);
+  border-bottom: 1px solid #e3e3e3;
+}
+
+.related-products .related-products__media img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Name and price mirror `.dropin-product-item-card__title` / `__price` on the
+   product listing page, including the fixed title height that keeps the prices
+   of neighbouring cards on one line. */
+.related-products .related-products__name {
+  display: block;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 80px;
+  margin: 5px 0;
+  padding: 0 10px;
+  overflow: hidden;
+  color: #00005e;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-align: center;
+  hyphens: auto;
+  overflow-wrap: break-word;
+}
+
+.related-products .related-products__price {
+  display: flex;
+  justify-content: center;
+  margin: 5px 0 0;
+  padding: 0 10px;
+  color: #000;
+  font-size: 20px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.related-products .related-products__footer {
+  margin-top: var(--spacing-xsmall);
+  font-size: 14px;
+  letter-spacing: 0;
+  padding: 10px;
+}
+
+.related-products .related-products__footer .dropin-checkbox {
+  align-items: center;
+  justify-content: center;
+}
+
+.related-products .related-products__footer .dropin-checkbox label {
+  color: #00005e;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.related-products .related-products__footer a {
+  color: #00005e;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.related-products .related-products__nav {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: 40px;
+  height: 40px;
+  color: var(--color-neutral-900, #111);
+  background: var(--color-neutral-100, #fff);
+  border: 1px solid var(--color-neutral-300, #ccc);
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-50%);
+  font-size: 26px;
+}
+
+.related-products .related-products__nav--prev {
+  left: .25rem;
+}
+
+.related-products .related-products__nav--next {
+  right: .25rem;
+}
+
+.related-products .related-products__nav--prev::before {
+  content: '‹';
+}
+
+.related-products .related-products__nav--next::before {
+  content: '›';
+}
+
+@media (min-width: 600px) {
+  .related-products {
+    --related-products-gap: 1rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .related-products .related-products__item {
+    flex-basis: calc((100% - (var(--related-products-gap) * 3)) / 4);
+  }
+}
+
+/* Phone and tablet: the PDP column the carousel sits in can be wider than the
+   screen, and a % width would inherit that. Anchoring the carousel to the
+   viewport (minus the page gutter) keeps exactly two cards on screen, with the
+   rest reachable through the arrows. */
+@media only screen and (max-width: 899px) {
+  .related-products .related-products__carousel {
+    width: calc(100vw - (var(--spacing-medium) * 2));
+    max-width: calc(100vw - (var(--spacing-medium) * 2));
+  }
+}
+
+/* The listing page steps the title and price down on small screens and on
+   tablet; the same steps are repeated here so both grids stay in sync. */
+@media only screen and (max-width: 767px) {
+  .related-products .related-products__name {
+    min-height: 100px;
+    padding: 0 5px;
+    font-size: 14px;
+  }
+
+  .related-products .related-products__price {
+    padding: 0 5px;
+    font-size: 16px;
+  }
+
+  .related-products .related-products__toolbar{
+    text-align: center;
+    display: block;
+  }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+  .related-products .related-products__name {
+    font-size: 16px;
+  }
+
+  .related-products .related-products__price {
+    font-size: 16px;
+  }
+}

@@ -15,3 +15,4 @@ export interface ResolveImageUrlOptions {
     fit?: string;
 }
 export declare const generateSrcset: (imageURL: string, options: ResolveImageUrlOptions) => string | undefined;
+//# sourceMappingURL=resolve-image.d.ts.map

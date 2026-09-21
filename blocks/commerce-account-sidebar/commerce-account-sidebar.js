@@ -3,9 +3,15 @@ import { render as accountRenderer } from '@dropins/storefront-account/render.js
 import { loadFragment } from '../fragment/fragment.js';
 import { CUSTOMER_ORDERS_PATH, rootLink } from '../../scripts/commerce.js';
 
+// The link list is collapsed behind a toggle below the tablet breakpoint (see
+// the block CSS); on desktop the toggle is hidden and the list is always open.
+const LIST_ID = 'commerce-account-sidebar-list';
+
 export default async function decorate(block) {
   const fragment = await loadFragment('/customer/sidebar-fragment');
   const sidebarItemsConfig = fragment.querySelectorAll('.default-content-wrapper > ol > li');
+  // Title of the item matching the current page, used as the collapsed toggle's label.
+  let activeTitle = '';
   const sidebarItems = Array.from(sidebarItemsConfig).map((item) => {
     const itemParams = Array.from(item.querySelectorAll('ol > li'));
     const itemTitle = item.childNodes[0]?.textContent?.trim() || item.querySelector(':scope > p')?.textContent?.trim() || 'Default Title';
@@ -30,6 +36,7 @@ export default async function decorate(block) {
     );
     if (isItemActive) {
       menuItemEl.classList.add('commerce-account-sidebar-item-active');
+      activeTitle = itemConfig.itemTitle;
     }
 
     const iconEl = createMenuItemIcon(itemConfig.itemIcon);
@@ -44,9 +51,37 @@ export default async function decorate(block) {
   });
 
   block.innerHTML = '';
+  if (!sidebarItems.length) return;
+
+  const listEl = document.createElement('div');
+  listEl.classList.add('commerce-account-sidebar-list');
+  listEl.id = LIST_ID;
   sidebarItems.forEach((el) => {
-    block.appendChild(el);
+    listEl.appendChild(el);
   });
+
+  block.appendChild(createMenuToggle(activeTitle, LIST_ID));
+  block.appendChild(listEl);
+}
+
+/**
+ * Mobile-only trigger that expands the link list. Labelled with the current
+ * page's item so the collapsed state still shows where you are.
+ * @param {string} activeTitle title of the item matching the current page
+ * @param {string} controlsId id of the list this button expands
+ */
+function createMenuToggle(activeTitle, controlsId) {
+  const toggleEl = document.createElement('button');
+  toggleEl.type = 'button';
+  toggleEl.classList.add('commerce-account-sidebar-toggle');
+  toggleEl.textContent = activeTitle || 'Account Menu';
+  toggleEl.setAttribute('aria-expanded', 'false');
+  toggleEl.setAttribute('aria-controls', controlsId);
+  toggleEl.addEventListener('click', () => {
+    const isExpanded = toggleEl.getAttribute('aria-expanded') === 'true';
+    toggleEl.setAttribute('aria-expanded', String(!isExpanded));
+  });
+  return toggleEl;
 }
 
 function createMenuItemIcon(iconSource) {

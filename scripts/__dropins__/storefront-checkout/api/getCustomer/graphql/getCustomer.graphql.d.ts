@@ -14,4 +14,5 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Adobe.
  *******************************************************************/
-export declare const getCustomerQuery = "\n  query getCustomer {\n    customer {\n      ...CUSTOMER_FRAGMENT\n    }\n  }\n\n  \n  fragment CUSTOMER_FRAGMENT on Customer {\n    firstname\n    lastname\n    email\n  }\n\n";
+export declare const getCustomerQuery: string;
+//# sourceMappingURL=getCustomer.graphql.d.ts.map

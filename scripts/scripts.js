@@ -1,4 +1,5 @@
 import {
+  buildBlock,
   loadHeader,
   loadFooter,
   decorateIcons,
@@ -8,7 +9,6 @@ import {
   loadSection,
   loadSections,
   loadCSS,
-  buildBlock,
 } from './aem.js';
 import {
   loadCommerceEager,
@@ -21,59 +21,29 @@ import {
   IS_UE,
   IS_DA,
 } from './commerce.js';
+import { initSeo } from './seo.js';
+import decorateBreadcrumb from './site-breadcrumb.js';
+import initYotpo from './yotpo.js';
+import { resolveCategoryRoute } from './category.js';
+import { resolveProductRoute } from './product.js';
 
-/*
- * Trusted Types default policy.
- *
- * This policy is defined but NOT currently enforced: the
- * `require-trusted-types-for 'script'` CSP directive that activates it has been
- * removed from the Content-Security-Policy meta in head.html. The policy is kept
- * here so enforcement can be turned back on without re-authoring it.
- *
- * Why the directive was removed: with it enforced, payment SDKs that build a
- * same-origin iframe and synchronously inject a <script> into it fail to render.
- * The Credit Card checkout flow hits this because its hosted-fields SDK does
- * exactly that. Trusted Types policies are scoped per document/realm, so the
- * child iframe inherits the CSP directive but not this default policy; the SDK's
- * `script.src` assignment in that realm then throws "This document requires
- * 'TrustedScriptURL' assignment" and the card fields never mount. Any dependency
- * that injects scripts into a same-origin iframe realm hits the same wall.
- *
- * To re-enable enforcement: add `require-trusted-types-for 'script';` back to the
- * `Content-Security-Policy` meta in head.html. Before doing so, note that the
- * policy below is a passthrough (createScriptURL/createScript return their input
- * unchanged), so enforcing it satisfies the API without adding real containment;
- * hardening it into an allowlist is the useful next step. Enforcement will also
- * re-break any same-origin-iframe SDK unless that SDK installs its own policy in
- * the iframe realm (the correct long-term fix).
- *
- * References:
- * - Directive introduced upstream: https://github.com/adobe/aem-boilerplate/pull/641
- * - Trusted Types API: https://developer.mozilla.org/en-US/docs/Web/API/Trusted_Types_API
+/**
+ * Builds hero block and prepends to main in a new section.
+ * @param {Element} main The container element
  */
-if (window.trustedTypes && window.trustedTypes.createPolicy) {
-  const innerTT = window.trustedTypes.createPolicy('tt-inner', {
-    createHTML: (s) => s, // avoid stack overflow
-  });
-
-  window.trustedTypes.createPolicy('default', {
-    createHTML: (input, type, sink) => {
-      let processedInput = input;
-      if (/srcdoc\s*=/i.test(processedInput)) {
-        const doc = new DOMParser().parseFromString(innerTT.createHTML(processedInput), 'text/html');
-        doc.querySelectorAll('iframe[srcdoc]').forEach((el) => el.removeAttribute('srcdoc'));
-        processedInput = doc.body.innerHTML;
-      }
-      if (sink.includes('createContextualFragment') || sink.includes('Document write')) {
-        const doc = new DOMParser().parseFromString(innerTT.createHTML(processedInput), 'text/html');
-        doc.querySelectorAll('script').forEach((el) => el.remove());
-        processedInput = doc.body.innerHTML;
-      }
-      return processedInput;
-    },
-    createScriptURL: (input) => input,
-    createScript: (input) => input,
-  });
+function buildHeroBlock(main) {
+  const h1 = main.querySelector('h1');
+  const picture = main.querySelector('picture');
+  // eslint-disable-next-line no-bitwise
+  if (h1 && picture && (h1.compareDocumentPosition(picture) & Node.DOCUMENT_POSITION_PRECEDING)) {
+    // Check if h1 or picture is already inside a hero block
+    if (h1.closest('.hero') || picture.closest('.hero')) {
+      return; // Don't create a duplicate hero block
+    }
+    const section = document.createElement('div');
+    section.append(buildBlock('hero', { elems: [picture, h1] }));
+    main.prepend(section);
+  }
 }
 
 /**
@@ -89,27 +59,50 @@ async function loadFonts() {
 }
 
 /**
- * Turns `/widgets/...` links into widget blocks.
- * @param {Element} main The container element
+ * Synthetic routes render a block for a URL path that has no content document.
+ * The server returns the 404 page for these paths; we detect the path, replace
+ * the error content in <main> with the route's block, and let the normal block
+ * decoration flow load and run it.
  */
-function buildWidgetAutoBlocks(main) {
-  const widgetLinks = [...main.querySelectorAll('a[href*="/widgets/"]')];
-  widgetLinks.forEach((link) => {
-    if (link.closest('.widget')) return;
-    const newLink = link.cloneNode(true);
-    const widgetBlock = buildBlock('widget', { elems: [newLink] });
-    const p = link.closest('p');
-    if (
-      p
-      && p.querySelectorAll('a').length === 1
-      && p.querySelector('a') === link
-      && p.textContent.trim() === link.textContent.trim()
-    ) {
-      p.replaceWith(widgetBlock);
-    } else {
-      link.replaceWith(widgetBlock);
-    }
-  });
+const SYNTHETIC_ROUTES = [
+  {
+    // /blog/post/<identifier> renders a single blog post.
+    match: (path) => /^\/blog\/post\/[^/]+\/?$/.test(path),
+    block: 'commerce-blog-detail',
+    title: 'Blog',
+  },
+  {
+    // /blog and /blog/<category> render the blog listing block.
+    match: (path) => /^\/blog(\/[^/]+)?\/?$/.test(path),
+    block: 'commerce-blog',
+    cells: [['page-size', '12']],
+    title: 'Blog',
+  },
+];
+
+/**
+ * If the current path matches a synthetic route, build its block into main.
+ * @param {Element} main The container element
+ * @returns {boolean} whether a synthetic route was matched
+ */
+function buildSyntheticRoute(main) {
+  const path = window.location.pathname;
+  const route = SYNTHETIC_ROUTES.find((r) => r.match(path));
+  if (!route) return false;
+
+  // This path is served as the 404 page; turn it into a normal rendered page.
+  // document.title is set here (synchronously, before decorateBreadcrumb runs)
+  // so the tab title and sitewide breadcrumb fallback never show the 404 page's
+  // original title while the block's own async decorate() resolves the real one.
+  window.isErrorPage = false;
+  main.classList.remove('error');
+  main.textContent = '';
+  document.title = route.title;
+
+  const section = document.createElement('div');
+  section.append(buildBlock(route.block, route.cells || ''));
+  main.append(section);
+  return true;
 }
 
 /**
@@ -135,10 +128,202 @@ function buildAutoBlocks(main) {
         });
       });
     }
-    buildWidgetAutoBlocks(main);
+
+    if (!main.querySelector('.hero')) buildHeroBlock(main);
   } catch (error) {
     console.error('Auto Blocking failed', error);
   }
+}
+
+/**
+ * In-code routes that render a block even when no content document exists in the
+ * content source. The URL 404s at the content bus, 404.html sets
+ * `window.isErrorPage`, and we rewrite <main> to hold the route's block. This
+ * keeps fully dynamic pages (data fetched at runtime) code-owned — no authoring.
+ * Match by suffix so store prefixes like /us/testimonials also resolve.
+ */
+const SYNTHETIC_PAGE_ROUTES = [
+  {
+    match: '/testimonials',
+    title: 'Testimonials',
+    sections: [
+      { heading: 'Testimonials', block: 'testimonials' },
+    ],
+  },
+  {
+    // Installer detail pages are runtime-driven and live beneath the main
+    // installer finder path.
+    match: (path) => /\/installer-finder\/[^/]+$/.test(path),
+    title: 'Installer Finder',
+    sections: [
+      { heading: 'Installer Finder', block: 'store-locator-detail' },
+    ],
+  },
+  {
+    // The installer finder is fully data-driven (locations come from the Store
+    // Locator app at runtime), so it is code-owned rather than authored. The
+    // nav already links to /installer-finder.
+    match: '/installer-finder',
+    title: 'Installer Finder',
+    sections: [
+      { heading: 'Installer Finder', block: 'store-locator' },
+    ],
+  },
+];
+
+function buildSyntheticBlock(name, config) {
+  if (!config) return `<div class="${name}"></div>`;
+  const rows = Object.entries(config)
+    .map(([k, v]) => `<div><div>${k}</div><div>${v}</div></div>`)
+    .join('');
+  return `<div class="${name}">${rows}</div>`;
+}
+
+function buildSyntheticSection({ heading, block, config }) {
+  return `
+    <div class="section">
+      ${heading ? `<h1>${heading}</h1>` : ''}
+      ${buildSyntheticBlock(block, config)}
+    </div>
+  `;
+}
+
+function matchSyntheticRoute() {
+  const path = window.location.pathname.replace(/\/$/, '');
+  return SYNTHETIC_PAGE_ROUTES.find((r) => {
+    if (typeof r.match === 'function') return r.match(path);
+    const matches = Array.isArray(r.match) ? r.match : [r.match];
+    return matches.some((m) => path === m || path.endsWith(m));
+  });
+}
+
+/**
+ * If the current path is a synthetic route and the server returned 404.html,
+ * rewrite <main> to hold the route's sections. Returns the matched route or null.
+ * @param {Element} main The main element
+ */
+function applySyntheticRoute(main) {
+  if (!window.isErrorPage) return null;
+  const route = matchSyntheticRoute();
+  if (!route) return null;
+  main.classList.remove('error');
+  if (route.bodyClasses) document.body.classList.add(...route.bodyClasses);
+  main.innerHTML = route.sections.map(buildSyntheticSection).join('');
+  document.title = route.title;
+  window.isErrorPage = false;
+  window.errorCode = undefined;
+  return route;
+}
+
+/**
+ * Dynamic Magento category route: when the server 404s a path and no other
+ * synthetic route claimed it, try resolving it as a Magento category by its
+ * complete `url_path` (arbitrary depth, e.g. "shop-by-product/water-filter",
+ * matched in full so categories that share a `url_key` under different
+ * parents are never confused with one another). On a match, render the
+ * existing `product-list-page` block with that `url_path` — the same
+ * category listing, breadcrumb, and child-category slider an authored PLP
+ * page would get, just without requiring one to be authored. On no match,
+ * returns null and leaves the normal 404 page in place.
+ * @param {Element} main The main element
+ * @returns {Promise<object|null>} the synthetic route (for loadSyntheticRoute), or null
+ */
+async function applyCategoryRoute(main) {
+  if (!window.isErrorPage) return null;
+
+  let resolved;
+  try {
+    resolved = await resolveCategoryRoute(window.location.pathname);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Category route: failed to resolve category', err);
+    return null;
+  }
+  if (!resolved) return null;
+
+  const route = {
+    title: resolved.category.name,
+    sections: [
+      { block: 'product-list-page', config: { urlpath: resolved.urlPath } },
+    ],
+  };
+  main.classList.remove('error');
+  main.innerHTML = route.sections.map(buildSyntheticSection).join('');
+  document.title = route.title;
+  window.isErrorPage = false;
+  window.errorCode = undefined;
+  return route;
+}
+
+/**
+ * Dynamic product route: when the server 404s a path and no other synthetic
+ * route claimed it, try resolving it as a product by its `url_key` (a single
+ * path segment ending in ".html", e.g. "/some-product.html"). On a match,
+ * inject a `sku` meta tag — `getProductSku()`'s primary lookup — and render
+ * the existing `product-details` block, exactly as an authored/bulk-metadata
+ * PDP would.
+ * @param {Element} main The main element
+ * @returns {Promise<object|null>} the synthetic route (for loadSyntheticRoute), or null
+ */
+async function applyProductRoute(main) {
+  if (!window.isErrorPage) return null;
+
+  let product;
+  try {
+    product = await resolveProductRoute(window.location.pathname);
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error('Product route: failed to resolve product', err);
+    return null;
+  }
+  if (!product) return null;
+
+  const skuMeta = document.createElement('meta');
+  skuMeta.name = 'sku';
+  skuMeta.content = product.sku;
+  document.head.appendChild(skuMeta);
+
+  const route = {
+    title: product.name,
+    sections: [
+      { block: 'product-details' },
+    ],
+  };
+  main.classList.remove('error');
+  main.innerHTML = route.sections.map(buildSyntheticSection).join('');
+  document.title = route.title;
+  window.isErrorPage = false;
+  window.errorCode = undefined;
+  return route;
+}
+
+/**
+ * Explicitly load + decorate a synthetic block (CSS + JS) so it renders even if
+ * the normal section/block pipeline doesn't pick it up on the 404 host.
+ * @param {Element} main The main element
+ * @param {string} blockName The block to load
+ */
+async function loadSyntheticBlock(main, blockName) {
+  const block = main.querySelector(`.${blockName}`);
+  if (!block) return;
+  if (block.dataset.blockStatus === 'loaded' || block.dataset.blockStatus === 'loading') return;
+  block.classList.add('block');
+  block.dataset.blockName = blockName;
+  block.dataset.blockStatus = 'loading';
+  try {
+    const base = window.hlx?.codeBasePath || '';
+    loadCSS(`${base}/blocks/${blockName}/${blockName}.css`);
+    const mod = await import(`${base}/blocks/${blockName}/${blockName}.js`);
+    if (mod.default) await mod.default(block);
+    block.dataset.blockStatus = 'loaded';
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.error(`Synthetic route: failed to load block ${blockName}`, err);
+  }
+}
+
+async function loadSyntheticRoute(main, route) {
+  await Promise.all(route.sections.map((section) => loadSyntheticBlock(main, section.block)));
 }
 
 /**
@@ -191,6 +376,7 @@ export function decorateMain(main) {
   decorateSections(main);
   decorateBlocks(main);
   decorateButtons(main);
+  decorateBreadcrumb(main);
 }
 
 /**
@@ -203,17 +389,25 @@ async function loadEager(doc) {
 
   const main = doc.querySelector('main');
   if (main) {
+    let syntheticRoute = applySyntheticRoute(main);
     try {
+      buildSyntheticRoute(main);
       await initializeCommerce();
+      // Category/product resolution needs commerce (GraphQL) initialized, so
+      // they can only be attempted here — after the static synthetic routes
+      // above, which match on the URL alone and don't need it.
+      if (!syntheticRoute) syntheticRoute = await applyCategoryRoute(main);
+      if (!syntheticRoute) syntheticRoute = await applyProductRoute(main);
       decorateMain(main);
       applyTemplates(doc);
       await loadCommerceEager();
     } catch (e) {
       console.error('Error initializing commerce configuration:', e);
-      loadErrorPage(418);
+      if (!syntheticRoute) loadErrorPage(418);
     }
     document.body.classList.add('appear');
     await loadSection(main.querySelector('.section'), waitForFirstImage);
+    if (syntheticRoute) await loadSyntheticRoute(main, syntheticRoute);
   }
 
   try {
@@ -235,6 +429,7 @@ async function loadLazy(doc) {
 
   const main = doc.querySelector('main');
   await loadSections(main);
+  initYotpo(main);
 
   const { hash } = window.location;
   const element = hash ? doc.getElementById(hash.substring(1)) : false;
@@ -243,6 +438,11 @@ async function loadLazy(doc) {
   loadFooter(doc.querySelector('footer'));
 
   loadCommerceLazy();
+
+  // Inject site-wide Organization + WebSite JSON-LD from the App Builder SEO
+  // service (ports the Magento Eighteentech_Seo structured data). Best-effort,
+  // non-blocking — must not delay lazy content.
+  initSeo();
 
   loadCSS(`${window.hlx.codeBasePath}/styles/lazy-styles.css`);
   loadFonts();

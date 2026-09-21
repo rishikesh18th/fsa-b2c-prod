@@ -24,6 +24,34 @@
             {
               "name": "Highlight",
               "value": "highlight"
+            },
+            {
+              "name": "ProductRow",
+              "value": "productrow"
+            }
+            ,
+            {
+              "name": "WhyChooseUs",
+              "value": "whychooseus"
+            }
+            ,
+            {
+              "name": "TwoColumn",
+              "value": "twocolumn"
+            },
+            {
+              "name": "BlogSection",
+              "value": "blogsection"
+            }
+            ,
+            {
+              "name": "AboutUs",
+              "value": "aboutus"
+            }
+            ,
+            {
+              "name": "FooterSection",
+              "value": "footersection"
             }
           ]
         },

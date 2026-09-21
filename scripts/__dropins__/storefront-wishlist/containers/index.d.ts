@@ -18,3 +18,4 @@ export * from './WishlistItem';
 export * from './Wishlist';
 export * from './WishlistToggle';
 export * from './WishlistAlert';
+//# sourceMappingURL=index.d.ts.map

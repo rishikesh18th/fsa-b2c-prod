@@ -18,3 +18,4 @@ export interface CustomerDataModelShort {
     lastname: string;
     email: string;
 }
+//# sourceMappingURL=customer.d.ts.map

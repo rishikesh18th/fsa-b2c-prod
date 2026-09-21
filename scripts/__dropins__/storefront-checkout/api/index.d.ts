@@ -33,3 +33,4 @@ export * from './setPaymentMethod';
 export * from './setShippingAddress';
 export * from './setShippingMethods';
 export * from './synchronizeCheckout';
+//# sourceMappingURL=index.d.ts.map

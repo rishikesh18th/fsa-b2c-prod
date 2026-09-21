@@ -29,3 +29,4 @@
  * // Output: "12:34 AM"
  */
 export declare const formatTimeToLocale: (date: string, locale?: string, options?: Intl.DateTimeFormatOptions) => string;
+//# sourceMappingURL=formatTimeToLocale.d.ts.map

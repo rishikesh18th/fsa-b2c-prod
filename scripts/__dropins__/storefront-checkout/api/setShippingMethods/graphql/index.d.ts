@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './setShippingMethodsOnCart.graphql';
 export * from './setShippingMethodsOnQuote.graphql';
+//# sourceMappingURL=index.d.ts.map

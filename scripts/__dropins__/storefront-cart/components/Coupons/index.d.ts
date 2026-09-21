@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './Coupons';
 export { Coupons as default } from './Coupons';
+//# sourceMappingURL=index.d.ts.map

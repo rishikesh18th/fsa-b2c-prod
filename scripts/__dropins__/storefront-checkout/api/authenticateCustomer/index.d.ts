@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './authenticateCustomer';
+//# sourceMappingURL=index.d.ts.map

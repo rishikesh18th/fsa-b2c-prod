@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const REQUEST_PASSWORD_RESET_EMAIL = "\n  mutation REQUEST_PASSWORD_RESET_EMAIL($email: String!) {\n    requestPasswordResetEmail(email: $email)\n  }\n";
+//# sourceMappingURL=requestPasswordResetEmail.graphql.d.ts.map

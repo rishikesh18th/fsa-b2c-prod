@@ -40,3 +40,4 @@ export interface getCustomerShortResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getCustomer.types.d.ts.map

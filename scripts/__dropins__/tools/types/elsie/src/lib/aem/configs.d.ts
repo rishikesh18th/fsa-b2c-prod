@@ -61,3 +61,4 @@ declare function initializeConfig(configObj: Config, optionsObj?: {
  */
 declare function getConfigValue(configParam: string): any;
 export { initializeConfig, getRootPath, getListOfRootPaths, isMultistore, getConfigValue, getHeaders, resetConfig, };
+//# sourceMappingURL=configs.d.ts.map

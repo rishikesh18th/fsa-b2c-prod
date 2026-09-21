@@ -333,7 +333,7 @@ export declare enum NegotiableQuoteHistoryEntryChangeType {
     UPDATED_BY_SYSTEM = "UPDATED_BY_SYSTEM"
 }
 export declare enum NegotiableQuoteStatus {
-    NEW = "NEW",// Currently not returned by the API, but is used to indicate a new quote
+    NEW = "NEW",
     SUBMITTED = "SUBMITTED",
     PENDING = "PENDING",
     UPDATED = "UPDATED",
@@ -359,3 +359,4 @@ export interface PermissionsModel {
     [key: string]: boolean | undefined;
 }
 export {};
+//# sourceMappingURL=storefront.d.ts.map

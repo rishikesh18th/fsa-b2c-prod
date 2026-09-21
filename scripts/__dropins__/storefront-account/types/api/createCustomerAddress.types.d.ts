@@ -65,3 +65,4 @@ export interface AddressForm {
     vat_id?: string;
 }
 export {};
+//# sourceMappingURL=createCustomerAddress.types.d.ts.map

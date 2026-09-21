@@ -23,6 +23,78 @@ function toggleStoreDropdown(sections, expanded = false) {
     });
 }
 
+const FOOTER_MOBILE_MQ = window.matchMedia('(max-width: 767px)');
+
+/**
+ * Expands or collapses a single footer accordion
+ * @param {Element} heading The clickable heading paragraph
+ * @param {Boolean} expanded Whether the panel should be expanded
+ */
+function toggleFooterPanel(heading, expanded) {
+  heading.setAttribute('aria-expanded', expanded);
+  heading.nextElementSibling.classList.toggle('footer-accordion-open', expanded);
+}
+
+/**
+ * Turns each heading of the footer cards into a mobile accordion. Every paragraph
+ * containing a <strong> becomes the toggle for the content that follows it, up to
+ * the next heading. Panels are only collapsible on mobile (see footer.css).
+ * @param {Element} footer The footer element
+ */
+function decorateFooterAccordions(footer) {
+  footer
+    .querySelectorAll('.footersection .cards .cards-card-body')
+    .forEach((body) => {
+      const headings = [...body.children].filter(
+        (el) => el.tagName === 'P' && el.querySelector('strong'),
+      );
+
+      headings.forEach((heading) => {
+        // group all siblings up to the next heading into a collapsible panel
+        const panel = document.createElement('div');
+        panel.className = 'footer-accordion-panel';
+        const content = document.createElement('div');
+        panel.append(content);
+
+        let next = heading.nextElementSibling;
+        while (next && !headings.includes(next)) {
+          const current = next;
+          next = next.nextElementSibling;
+          content.append(current);
+        }
+
+        // nothing to toggle, leave the heading as plain text
+        if (!content.children.length) return;
+
+        heading.classList.add('footer-accordion-toggle');
+        heading.setAttribute('role', 'button');
+        heading.setAttribute('tabindex', '0');
+        heading.setAttribute('aria-expanded', 'false');
+        heading.after(panel);
+
+        heading.addEventListener('click', () => {
+          if (!FOOTER_MOBILE_MQ.matches) return;
+          toggleFooterPanel(heading, heading.getAttribute('aria-expanded') !== 'true');
+        });
+
+        heading.addEventListener('keydown', (e) => {
+          if (!FOOTER_MOBILE_MQ.matches) return;
+          if (e.key !== 'Enter' && e.key !== ' ') return;
+          e.preventDefault();
+          toggleFooterPanel(heading, heading.getAttribute('aria-expanded') !== 'true');
+        });
+      });
+    });
+
+  // collapse everything again when leaving the mobile viewport
+  FOOTER_MOBILE_MQ.addEventListener('change', (e) => {
+    if (e.matches) return;
+    footer
+      .querySelectorAll('.footer-accordion-toggle[aria-expanded="true"]')
+      .forEach((heading) => toggleFooterPanel(heading, false));
+  });
+}
+
 /**
  * loads and decorates the footer
  * @param {Element} block The footer block element
@@ -167,6 +239,8 @@ export default async function decorate(block) {
     }
   }
   while (fragment.firstElementChild) footer.append(fragment.firstElementChild);
+
+  decorateFooterAccordions(footer);
 
   block.append(footer);
 }

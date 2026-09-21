@@ -54,7 +54,7 @@ A JSON file with the same product data structured in the expected format:
     "offset": 0,
     "data": [
       {
-        "URL": "/products/{urlKey}/{sku}",
+        "URL": "/{urlKey}.html",
         "title": "Product Name",
         "description": "Product Description",
         "keywords": "...",
@@ -62,7 +62,7 @@ A JSON file with the same product data structured in the expected format:
         "og:type": "product",
         "og:title": "Product Name",
         "og:description": "Product Description",
-        "og:url": "https://www.aemshop.net/products/{urlKey}/{sku}",
+        "og:url": "https://www.aemshop.net/{urlKey}.html",
         "og:image": "image_url",
         "og:image:secure_url": "image_url",
         "last-modified": "timestamp",

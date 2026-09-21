@@ -7,16 +7,16 @@
 .commerce-account-sidebar-wrapper .commerce-account-sidebar .commerce-account-sidebar-item {
     display: flex;
     align-items: center;
-    padding: var(--spacing-medium);
+    padding: 20px;
     margin-bottom: var(--spacing-small);
     border: var(--shape-border-width-2) solid var(--color-neutral-400);
     border-radius: var(--shape-border-radius-2);
     text-decoration: none;
+    background: #fff;
 }
 
 .commerce-account-sidebar-wrapper .commerce-account-sidebar .commerce-account-sidebar-item-active {
     border-color: var(--color-neutral-800);
-    background-color: var(--color-neutral-200);
 }
 
 .commerce-account-sidebar-item-icon {
@@ -34,17 +34,26 @@
     flex: 1 1 auto;
 }
 
+.section.commerce-account-header-container.commerce-orders-list-container, .section.commerce-addresses-container {
+    background: #fff;
+    padding: 20px !important;
+    border-radius: 15px;
+}
+
 .commerce-account-sidebar-item-title {
-    font: var(--type-button-1-font);
+    font-size: 14px;
+    font-weight: 600;
     margin: 0 0 var(--spacing-xxsmall);
     border: none;
     text-decoration: none;
+    color:#000;
 }
 
 .commerce-account-sidebar-item-subtitle {
-    font: var(--type-button-2-font);
     margin: 0;
     text-decoration: none;
+    font-size: 14px;
+    font-weight: 400;
 }
 
 .commerce-account-sidebar-item-arrow {
@@ -56,4 +65,102 @@
     display: flex;
     align-items: center;
     justify-content: center;
+}
+
+.account-empty-list .dropin-card__content p{
+    font-size: 16px;
+}
+
+.dropin-header-container .dropin-header-container__divider {
+    border-top: 2px solid var(--color-neutral-400);
+}
+
+.account-empty-list .dropin-card__content{
+    padding: 20px 0;
+}
+
+/* Mobile: the sidebar collapses behind a single toggle, and each row is a
+   plain link — icons and subtitles are desktop-only. Both are restored in the
+   min-width: 900px query at the end of this file. */
+.commerce-account-sidebar .commerce-account-sidebar-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--spacing-small);
+    width: 100%;
+    padding: 10px 15px;
+    border: var(--shape-border-width-2) solid var(--color-neutral-800);
+    border-radius: var(--shape-border-radius-2);
+    background: #fff;
+    color: #000;
+    font-size: 14px;
+    font-weight: 600;
+    text-align: left;
+    cursor: pointer;
+}
+
+.commerce-account-sidebar .commerce-account-sidebar-toggle::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid #000;
+    border-bottom: 2px solid #000;
+    transform: translateY(-25%) rotate(45deg);
+    transition: transform .35s ease;
+}
+
+.commerce-account-sidebar .commerce-account-sidebar-toggle[aria-expanded="true"]::after {
+    transform: translateY(25%) rotate(-135deg);
+}
+
+.commerce-account-sidebar .commerce-account-sidebar-list {
+    display: none;
+    margin-top: var(--spacing-small);
+}
+
+.commerce-account-sidebar .commerce-account-sidebar-toggle[aria-expanded="true"] + .commerce-account-sidebar-list {
+    display: block;
+}
+
+.commerce-account-sidebar .commerce-account-sidebar-item-icon,
+.commerce-account-sidebar .commerce-account-sidebar-item-subtitle {
+    display: none;
+}
+
+@media (min-width: 900px) {
+    .commerce-account-sidebar .commerce-account-sidebar-toggle {
+        display: none;
+    }
+
+    .commerce-account-sidebar .commerce-account-sidebar-list {
+        display: block;
+        margin-top: 0;
+    }
+
+    .commerce-account-sidebar .commerce-account-sidebar-item-icon,
+    .commerce-account-sidebar .commerce-account-sidebar-item-subtitle {
+        display: block;
+    }
+}
+
+@media (max-width:767px) {
+    .commerce-account-sidebar-wrapper .commerce-account-sidebar .commerce-account-sidebar-item{
+        padding: 6px 0 6px 15px;
+        margin-bottom: var(--spacing-xsmall);
+        background: none;
+        border: 0;
+    }
+
+    .commerce-account-sidebar .commerce-account-sidebar-toggle[aria-expanded="true"] + .commerce-account-sidebar-list {
+        display: block;
+        background: #fff;
+        border: 1.5px solid #000;
+        border-radius: 10px;
+        padding: 10px 0;
+    }
+
+    .commerce-account-sidebar-item-title{
+        margin-bottom: 0;
+    }
 }

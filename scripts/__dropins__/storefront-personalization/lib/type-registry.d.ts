@@ -16,3 +16,4 @@
  *******************************************************************/
 export declare const registerTypeIsFirst: (type: string | undefined) => boolean;
 export declare const resetTypes: () => void;
+//# sourceMappingURL=type-registry.d.ts.map

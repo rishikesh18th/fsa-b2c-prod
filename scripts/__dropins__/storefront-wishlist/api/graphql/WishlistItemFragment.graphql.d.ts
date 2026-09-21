@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const WISHLIST_ITEM_FRAGMENT: string;
+//# sourceMappingURL=WishlistItemFragment.graphql.d.ts.map

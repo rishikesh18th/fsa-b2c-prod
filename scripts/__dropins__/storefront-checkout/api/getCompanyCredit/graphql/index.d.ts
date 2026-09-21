@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './getCompanyCredit.graphql';
+//# sourceMappingURL=index.d.ts.map

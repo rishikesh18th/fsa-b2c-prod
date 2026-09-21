@@ -1,1 +1,87 @@
 /* add global styles that can be loaded post LCP here */
+
+/* Yotpo reviews (see scripts/yotpo.js) */
+#yotpo-pdp-star-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    margin: 4px 0 8px;
+    min-height: 18px;
+}
+
+#yotpo-pdp-star-summary  a{
+    color: #2f84ed;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0;
+}
+
+/* Custom star rating (see ensureCustomBottomline/ensurePlpBottomline in
+   scripts/yotpo.js) — the native Star Ratings widget resolves its data
+   successfully but doesn't paint outside the account's authorized domain, so
+   this renders the same bottomline data (open API, no domain lock) ourselves. */
+.yotpo-custom-bottomline {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    background: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+.yotpo-custom-stars {
+    position: relative;
+    display: inline-block;
+    font-size: 15px;
+    line-height: 1;
+    letter-spacing: 2px;
+    white-space: nowrap;
+}
+
+.yotpo-custom-stars__empty,
+.yotpo-custom-stars__filled {
+    display: block;
+}
+
+/* Yotpo's own brand colors (not this site's --color-brand-* tokens, which
+   are already used for the storefront's own buttons/branding and would
+   otherwise silently win over any var(--color-brand-600, #e7721b)-style
+   fallback, since those tokens ARE defined — just to different colors). */
+.yotpo-custom-stars__empty {
+    color: #d5d5d5;
+}
+
+.yotpo-custom-stars__filled {
+    position: absolute;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    color: #e7721b;
+}
+
+.yotpo-custom-count {
+    font-size: 14px;
+    color: #2f84ed;
+}
+
+.yotpo-plp-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 4px;
+}
+
+.yotpo-plp-rating .yotpo-custom-count {
+    font-size: 12px;
+    color: var(--color-neutral-600, #6b6d76);
+}
+
+#yotpo-pdp-reviews {
+    margin-top: var(--spacing-medium);
+}
+
+#yotpo-pdp-qa {
+    margin-top: var(--spacing-medium);
+}

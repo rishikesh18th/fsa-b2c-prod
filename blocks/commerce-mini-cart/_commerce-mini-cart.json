@@ -36,6 +36,16 @@
         "component": "boolean",
         "name": "undo-remove-item",
         "label": "Undo Remove Item"
+      },
+      {
+        "component": "boolean",
+        "name": "enable-quantity-update",
+        "label": "Enable Quantity Update"
+      },
+      {
+        "component": "boolean",
+        "name": "enable-item-removal",
+        "label": "Enable Item Removal"
       }
     ]
   }],

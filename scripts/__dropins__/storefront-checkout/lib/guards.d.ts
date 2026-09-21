@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const ensureHasCartOrQuoteId: () => void;
+//# sourceMappingURL=guards.d.ts.map

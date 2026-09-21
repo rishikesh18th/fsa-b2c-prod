@@ -1,5 +1,4 @@
 .commerce-cart {
-  padding: var(--spacing-large) 0;
   position: relative;
 }
 
@@ -37,9 +36,9 @@
 .cart-item-edit-link .dropin-button,
 .cart__action--wishlist-toggle .dropin-button {
   padding: 0;
-  font: var(--type-body-1-strong-font);
+  font-size: 14px;
   letter-spacing: var(--type-body-1-strong-letter-spacing);
-  font-weight: 600;
+  font-weight: 500;
   display: inline-flex;
 }
 
@@ -62,6 +61,100 @@
     width: fit-content;
 }
 
+
+
+.cart-cart-summary-list__content .dropin-cart-list__wrapper {
+    gap: 0;
+}
+
+.cart-cart-summary-list__content .dropin-cart-list__wrapper .dropin-cart-list__item {
+    padding: 20px 0 15px;
+    border-bottom: 1px solid #ccc;
+}
+
+.cart-cart-summary-list__content .dropin-cart-list__wrapper .dropin-cart-list__item:last-child {
+    padding: 20px 0 0;
+    border-bottom: 0;
+}
+
+.dropin-cart-item__quantity .dropin-incrementer__content {
+    border: 0;
+    grid-template-columns: 1fr 2fr 1fr;
+    margin-top: 10px;
+}
+
+.cart-cart-summary-list__heading-divider{
+  border-top: 1px solid #ccc;
+  margin-bottom: 10px;
+}
+
+.cart-cart-summary-list__footer-divider {
+    display: none;
+}
+
+.dropin-cart-item__quantity .dropin-incrementer__content .dropin-incrementer__button-container{
+    background: none;
+}
+
+.dropin-cart-item__quantity .dropin-incrementer__content .dropin-incrementer__button-container button{
+    width: 30px;
+    height: 30px;
+    display: flex;
+    justify-content: center;
+    color: #000;
+    border: 1px solid #ccc;
+}
+
+.dropin-cart-item__quantity .dropin-incrementer__content .dropin-incrementer__button-container .dropin-incrementer__decrease-button:hover{
+    background: #00a0df;
+    color: #fff;
+    border: 1px solid #00a0df;
+}
+
+
+.dropin-cart-item__quantity .dropin-incrementer__content .dropin-incrementer__button-container .dropin-incrementer__increase-button:hover{
+    background: #00a0df;
+    color: #fff;
+    border: 1px solid #00a0df;
+}
+
+.dropin-cart-item__quantity .dropin-incrementer__content .dropin-incrementer__input{
+    background: none;
+    width: 60px;
+    font-weight: 600;
+}
+
+/* Colors come from the global primary button tokens in styles/styles.css. */
+button.dropin-button.dropin-button--primary, a.dropin-button.dropin-button--primary, .dropin-iconButton--primary{
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.dropin-button--secondary, a.dropin-button--secondary, .dropin-iconButton--secondary{
+  color: #00005e !important;
+  border: 1px solid #00005e !important;
+  font-weight: 500;
+  letter-spacing: 0;
+}
+
+.cart-order-summary__primary{
+  background: #fff;
+}
+
+.cart__list .cart-cart-summary-list {
+    padding: 20px;
+    background: #fff;
+}
+
+.cart-estimate-shipping--edit button {
+    width: 100%;
+}
+
+
+.cart-cart-summary-list__content .dropin-cart-list__wrapper .dropin-cart-list__item::after {
+    display: none;
+}
+
 @media (min-width: 768px) {
   .cart__wrapper {
     flex-direction: row;
@@ -77,5 +170,11 @@
   .cart__right-column {
     flex: 1;
     flex-basis: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .cart-estimate-shipping--edit button{
+    width: 100%;
   }
 }

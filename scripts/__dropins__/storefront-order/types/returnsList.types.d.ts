@@ -1,21 +1,7 @@
-/********************************************************************
- * ADOBE CONFIDENTIAL
- *
- *  Copyright 2024 Adobe
- *  All Rights Reserved.
- *
- * NOTICE:  All information contained herein is, and remains
- * the property of Adobe and its suppliers, if any. The intellectual
- * and technical concepts contained herein are proprietary to Adobe
- * and its suppliers and are protected by all applicable intellectual
- * property laws, including trade secret and copyright laws.
- * Dissemination of this information or reproduction of this material
- * is strictly forbidden unless prior written permission is obtained
- * from Adobe.
- *******************************************************************/
-import { SlotProps } from '@dropins/tools/src/lib';
-import { ImageProps } from '../../node_modules/@dropins/tools/src/components';
+import { SlotProps } from '@dropins/tools/types/elsie/src/src/lib';
+import { ImageProps } from '@dropins/tools/types/elsie/src/components';
 import { OrderDataModel, OrderItemModel, OrdersReturnItemsPropsModel, OrdersReturnPropsModel, PageInfoProps } from '../data/models';
+
 export interface IconConfig {
     size: '12' | '16' | '24' | '32' | '64' | '80' | undefined;
     stroke: '4' | '1' | '2' | '3' | undefined;
@@ -102,3 +88,4 @@ export interface UseOrderReturnsProps {
     orderData?: OrderDataModel;
 }
 export {};
+//# sourceMappingURL=returnsList.types.d.ts.map

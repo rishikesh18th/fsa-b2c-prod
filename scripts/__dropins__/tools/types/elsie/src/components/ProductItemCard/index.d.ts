@@ -8,3 +8,4 @@
  *******************************************************************/
 export * from './ProductItemCard';
 export { ProductItemCard as default } from './ProductItemCard';
+//# sourceMappingURL=index.d.ts.map

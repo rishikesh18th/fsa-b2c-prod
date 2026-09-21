@@ -27,3 +27,4 @@ export interface SelectedCustomizableOptionValue {
     label: string;
     value: string;
 }
+//# sourceMappingURL=selected-customizable-option.d.ts.map

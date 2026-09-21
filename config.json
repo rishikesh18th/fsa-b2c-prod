@@ -1,0 +1,83 @@
+{
+  "public": {
+    "default": {
+      "commerce-endpoint": "https://na1-sandbox.api.commerce.adobe.com/5fS3Rh4B2rMGeBM1L9fsHM/graphql",
+      "testimonials-endpoint": "https://4260392-697tanloon-stage.adobeioruntime.net/api/v1/web/testimonial",
+      "store-locator-endpoint": "https://4260392-315blackcattle-stage.adobeio-static.net/api/v1/web/StoreLocatorAppId/location-graphql",
+      "blog-endpoint": "https://edge-sandbox-graph.adobe.io/api/ceb23d38-6875-432f-bebf-a89bf367b723/graphql",
+      "commerce-core-endpoint":"https://na1-sandbox.api.commerce.adobe.com/5fS3Rh4B2rMGeBM1L9fsHM/graphql",
+      "headers": {
+        "all": {
+          "Store": "default"
+        },
+        "cs": {
+          "Magento-Store-Code": "main_website_store",
+          "Magento-Store-View-Code": "default",
+          "Magento-Website-Code": "base"
+        }
+      },
+      "commerce-b2b-enabled": false,
+      "commerce-companies-enabled": false,
+      "commerce-assets-enabled": true,
+      "adobe-commerce-optimizer": false,
+      "analytics": {
+        "base-currency-code": "USD",
+        "environment": "Testing",
+        "environment-id": "5fS3Rh4B2rMGeBM1L9fsHM",
+        "store-code": "main_website_store",
+        "store-id": "main_website_store",
+        "store-name": "Default Store View",
+        "store-url": "https://coresaas-subgraph-external:8000/5fS3Rh4B2rMGeBM1L9fsHM/",
+        "store-view-code": "default",
+        "store-view-id": "default",
+        "store-view-name": "Default Store View",
+        "website-code": "base",
+        "website-id": "base",
+        "website-name": "Main Website"
+      },
+      "plugins": {
+        "picker": {
+          "rootCategory": "2"
+        }
+      },
+      "category-media-base": "https://na1-static-sandbox.api.commerce.adobe.com/5fS3Rh4B2rMGeBM1L9fsHM/media/catalog/category/",
+      "category-menu-order": [
+        "shop-by-product/water-filter",
+        "shop-by-product/reverse-osmosis-water-filter",
+        "shop-by-product/water-filter-cartridges",
+        "shop-by-product/ultraviolet-sanitation",
+        "shop-by-product/filtration-components",
+        "shop-by-product/fittings-connectors",
+        "shop-by-product/misc",
+        "shop-by-product/water-analysis-service",
+        "shop-by-product/personalised-home-water-filter-assessment",
+        "shop-by-product/adsorption-filters"
+      ],
+      "category-thumbnails": {
+        "shop-by-brand/water-filter-systems": "Water_Filter_Systems.jpg",
+        "shop-by-brand/reverse-osmosis-water-filters": "",
+        "shop-by-brand/water-filter-cartridges": "",
+        "shop-by-brand/ultraviolet-tank-sanitation": "",
+        "shop-by-brand/filtration-components": "",
+        "shop-by-brand/fittings": "",
+        "shop-by-brand/irrigation": ""
+      },
+      "yotpo": {
+        "loader-token": "MiYqr6pLo4uM7oXnMnqaO13o5qy27pLQHQp9o9zC",
+        "pdp-star-summary-instance-id": "1213853",
+        "pdp-reviews-instance-id": "1148154",
+        "pdp-qa-instance-id": "1247198",
+        "plp-star-ratings-instance-id": "1213853"
+      },
+      "cms-render-endpoint": "https://4260392-697tanloon-stage.adobeio-static.net/api/v1/web/cms/render",
+      "pdp-tabs": [
+        { "label": "Description", "source": "description" },
+        { "label": "Specs/Performance", "source": "attribute", "attribute": "spec" },
+        { "label": "Instructions & Brochure", "source": "attribute", "attribute": "installation_link", "render": "link", "linkText": "View Instructions & Brochure" },
+        { "label": "Returns", "source": "cms-block", "identifier": "returns" },
+        { "label": "Community Q&A", "source": "yotpo-qa" },
+        { "label": "FAQ", "source": "attribute", "attribute": "faq" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,277 @@
+/*
+ * Keep the site footer at the bottom of the viewport on this page. It is a
+ * short, code-owned page, so without a full-height body the sticky-footer grid
+ * (body { grid-template-rows: auto 1fr auto }) can't stretch <main> and the
+ * footer floats mid-screen. Scoped to pages that contain this block only.
+ */
+body:has(.testimonials) {
+  min-height: 100vh;
+}
+
+.testimonials {
+  --testimonials-accent: #00a6ed;
+}
+
+.testimonials .testimonials-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-medium);
+}
+
+@media (min-width: 720px) {
+  .testimonials .testimonials-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1080px) {
+  .testimonials .testimonials-list {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.testimonials .testimonials-item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-small);
+  padding: var(--spacing-large) var(--spacing-medium) var(--spacing-medium);
+  border: var(--shape-border-width-1) solid var(--color-neutral-200, #f0f0f0);
+  border-radius: var(--shape-border-radius-2, 8px);
+  background-color: var(--color-neutral-50, #fff);
+  box-shadow: var(--shape-shadow-3, 0 2px 3px 0 rgb(0 0 0 / 16%));
+  overflow: hidden;
+  text-align: left; /* don't inherit centered alignment from the section */
+  font: var(--type-body-1-default-font);
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.testimonials .testimonials-item:hover {
+  box-shadow: var(--shape-shadow-2, 0 2px 16px 0 rgb(0 0 0 / 16%));
+  transform: translateY(-3px);
+}
+
+/* Decorative opening quote mark. */
+.testimonials .testimonials-item::before {
+  content: "\201C";
+  position: absolute;
+  top: -0.15em;
+  left: 0.2em;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 5rem;
+  line-height: 1;
+  color: var(--testimonials-accent);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.testimonials .testimonials-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xsmall);
+  flex: 1 1 auto; /* push the footer to the bottom of the card */
+}
+
+.testimonials .testimonials-title {
+  margin: 0;
+  font: var(--type-headline-2-strong-font);
+  color: var(--color-neutral-900, #292929);
+}
+
+.testimonials .testimonials-description {
+  margin: 0;
+  padding: 0;
+
+  /* Reset the global `main blockquote` styling (italic, 3rem margin, negative
+     text-indent, injected quote marks) so the quote text aligns cleanly. */
+  text-indent: 0;
+  hanging-punctuation: none;
+  font: var(--type-body-1-default-font);
+  color: var(--color-neutral-800, #333);
+}
+
+.testimonials .testimonials-description p {
+  margin: 0 0 var(--spacing-xsmall);
+  text-indent: 0;
+}
+
+.testimonials .testimonials-description p:last-child {
+  margin-bottom: 0;
+}
+
+.testimonials .testimonials-description p::before,
+.testimonials .testimonials-description p::after {
+  content: none;
+}
+
+/* Attribution footer: avatar + name/company. */
+.testimonials .testimonials-footer {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-small);
+  margin-top: var(--spacing-small);
+  padding-top: var(--spacing-small);
+  border-top: var(--shape-border-width-1, 1px) solid var(--color-neutral-200, #f0f0f0);
+}
+
+.testimonials .testimonials-image {
+  flex: 0 0 auto;
+  margin: 0;
+  line-height: 0;
+}
+
+.testimonials .testimonials-image img {
+  width: 52px;
+  height: 52px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px var(--color-neutral-50, #fff), 0 0 0 4px var(--testimonials-accent);
+}
+
+.testimonials .testimonials-attribution {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.testimonials .testimonials-author {
+  font: var(--type-body-1-strong-font);
+  font-style: normal; /* reset the browser default italic on <cite> */
+  color: var(--color-neutral-900, #292929);
+}
+
+.testimonials .testimonials-company {
+  font: var(--type-body-2-default-font);
+  color: var(--color-neutral-700, #666);
+}
+
+.testimonials .testimonials-empty,
+.testimonials .testimonials-error {
+  font: var(--type-body-1-default-font);
+  color: var(--color-neutral-700, #666);
+  text-align: center;
+  padding: var(--spacing-big) 0;
+}
+
+/* Pagination (Magento-style: "Items X to Y of Z total" + page buttons). */
+.testimonials .testimonials-pagination {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-small);
+  margin-top: var(--spacing-large);
+  font-size: 14px;
+  color: var(--color-neutral-700, #666);
+}
+
+.testimonials .testimonials-pagination:empty {
+  display: none;
+}
+
+.testimonials .testimonials-pagination__info {
+  margin-right: var(--spacing-xsmall);
+}
+
+.testimonials .testimonials-pagination__pages {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--spacing-xxsmall);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.testimonials .testimonials-pagination__page {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: var(--shape-border-width-1, 1px) solid var(--color-neutral-300, #e8e8e8);
+  border-radius: var(--shape-border-radius-1, 3px);
+  background: var(--color-neutral-50, #fff);
+  color: var(--color-neutral-800, #3d3d3d);
+  font-family: var(--type-base-font-family);
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.testimonials .testimonials-pagination__page:hover {
+  border-color: var(--testimonials-accent);
+  color: var(--testimonials-accent);
+}
+
+.testimonials .testimonials-pagination__page[aria-current="true"] {
+  border-color: var(--testimonials-accent);
+  background: var(--testimonials-accent);
+  color: #fff;
+  font-weight: 700;
+  cursor: default;
+}
+
+.testimonials .testimonials-pagination__arrow {
+  font-size: 18px;
+}
+
+/* Loading skeleton (shown on first load, before any cached data exists). */
+.testimonials .testimonials-item--skeleton {
+  pointer-events: none;
+}
+
+.testimonials .testimonials-item--skeleton::before {
+  content: none; /* no decorative quote on placeholders */
+}
+
+.testimonials .testimonials-skeleton {
+  display: block;
+  width: 100%;
+  border-radius: var(--shape-border-radius-1, 3px);
+  background: linear-gradient(
+    90deg,
+    var(--color-neutral-200, #f5f5f5) 25%,
+    var(--color-neutral-300, #e8e8e8) 37%,
+    var(--color-neutral-200, #f5f5f5) 63%
+  );
+  background-size: 400% 100%;
+  animation: testimonials-shimmer 1.4s ease infinite;
+}
+
+.testimonials .testimonials-skeleton--line {
+  height: 12px;
+  margin-bottom: 10px;
+}
+
+.testimonials .testimonials-skeleton--short {
+  width: 60%;
+}
+
+.testimonials .testimonials-skeleton--avatar {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+}
+
+.testimonials .testimonials-skeleton--name {
+  width: 40%;
+  height: 12px;
+}
+
+@keyframes testimonials-shimmer {
+  0% { background-position: 100% 0; }
+  100% { background-position: 0 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .testimonials .testimonials-skeleton {
+    animation: none;
+  }
+}

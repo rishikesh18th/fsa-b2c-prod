@@ -14,7 +14,6 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Adobe.
  *******************************************************************/
-export * from './constants';
 export * from './initialize';
 export * from './fetch-graphql';
 export * from './getStoreConfig';
@@ -27,3 +26,4 @@ export * from './updateProductsInWishlist';
 export * from './resetWishlist';
 export * from './initializeWishlist';
 export * from './mergeWishlists';
+//# sourceMappingURL=index.d.ts.map

@@ -1,12 +1,5 @@
-/********************************************************************
- *  Copyright 2024 Adobe
- *  All Rights Reserved.
- *
- * NOTICE:  Adobe permits you to use, modify, and distribute this
- * file in accordance with the terms of the Adobe license agreement
- * accompanying it.
- *******************************************************************/
 import { Events } from './events-catalog';
+
 export * from './events-catalog';
 /**
  * The `events` class provides static methods for event handling.
@@ -42,7 +35,7 @@ export declare class events {
      */
     static lastPayload<K extends keyof Events>(event: K, options?: {
         scope?: string;
-    }): Events[K] | undefined;
+    }): any;
     /**
      * Subscribes to an event.
      * @param event - The event to subscribe to.
@@ -70,3 +63,4 @@ export declare class events {
      */
     static enableLogger(enabled: boolean): void;
 }
+//# sourceMappingURL=index.d.ts.map

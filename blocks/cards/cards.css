@@ -29,3 +29,275 @@
   aspect-ratio: 4 / 3;
   object-fit: cover;
 }
+
+.productrow.cards-container.section {
+  padding-top: 50px;
+  margin:0;
+}
+
+.productrow h2 {
+    text-align: center;
+    color: #00005e;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 0;
+    line-height: 1.2;
+}
+
+.productrow p {
+    text-align: center;
+    color: #00005e;
+}
+
+.productrow .cards-wrapper {
+    margin: 0 auto;
+    padding-top: 10px;
+}
+
+.productrow .cards-wrapper .cards ul {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 30px; /* Optional */
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-image {
+    border: 0;
+    border-radius: 20px 20px 0 0;
+    overflow: hidden;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-body {
+    margin: 0;
+}
+
+.productrow .cards-wrapper .cards ul li {
+    padding: 0;
+    border: 0;
+    overflow: hidden;
+    border-radius: 20px;
+    position: relative;
+}
+
+.productrow .cards-wrapper .cards ul li a::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-body p.button-wrapper {
+    width: 100%;
+    border-radius: 0 0 20px 20px;
+    padding: 15px;
+    background: #83d7fa;
+    border: 0;
+    color: #001a56;
+    box-sizing: border-box;
+    margin: 0;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-body p.button-wrapper a.button.primary {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #001a56;
+  text-transform: uppercase;
+  letter-spacing: 0;
+  font-size: 15px;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-body p.button-wrapper a.button.primary::after {
+    content: '';
+    background-image: url('../../icons/arrow-icon.svg');
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 100%;
+    display: block;
+    height: 10px;
+    width: 16px;
+    margin-left: 10px;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-body p.button-wrapper a.button.primary:hover {
+    text-decoration: underline;
+}
+
+.productrow .cards-wrapper .cards ul li .cards-card-image img {
+    aspect-ratio: auto;
+}
+
+
+/* ==========================
+  Two Column Cards
+========================== */
+
+.twocolumn {
+    background: #eef4f8;
+}
+
+.twocolumn .cards > ul {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 40px;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.twocolumn .cards > ul > li {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    background: #fff;
+    border-radius: 24px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgb(0 0 0 / 8%);
+    border: 0;
+    padding: 0;
+    transition: .3s;
+}
+
+.twocolumn .cards > ul > li:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgb(0 0 0 / 12%);
+}
+
+/* Image */
+
+.twocolumn .cards-card-image {
+    height: 100%;
+}
+
+.twocolumn .cards-card-image picture,
+.twocolumn .cards-card-image img {
+    display: block;
+    width: 100%;
+}
+
+.twocolumn .cards-card-image img {
+    aspect-ratio: auto;
+}
+
+/* Content */
+
+.twocolumn .cards-card-body {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+    margin: 0;
+}
+
+/* Water Splash Background */
+
+.twocolumn .cards-card-body::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 170px;
+    height: 170px;
+    background: url("/icons/small-water-bg.png") no-repeat top right;
+    background-size: contain;
+    pointer-events: none;
+}
+
+/* Heading */
+
+.twocolumn .cards-card-body p:first-child {
+    margin: 0 0 15px;
+}
+
+.twocolumn .cards-card-body strong {
+    display: block;
+    font-size: 18px;
+    line-height: 1.3;
+    color: #091a73;
+    text-transform: uppercase;
+    letter-spacing: .5px;
+    font-weight: 500;
+    padding-right: 80px;
+}
+
+/* Description */
+
+.twocolumn .cards-card-body p:nth-child(2) {
+    margin: 0 0 15px;
+    font-size: 15px;
+    color: #363636;
+    padding-right: 90px;
+}
+
+/* Button */
+
+.twocolumn .cards-card-body p:last-child {
+    margin: 0;
+}
+
+.twocolumn .cards-card-body a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: fit-content;
+    border: 1px solid #0d9df2;
+    border-radius: 40px;
+    text-decoration: none;
+    text-transform: uppercase;
+    color: #0d9df2;
+    font-size: 14px;
+    font-weight: 500;
+    transition: .3s;
+    padding: 10px 20px;
+}
+
+.twocolumn .cards-card-body a:hover {
+    background: #00005e;
+    color: #fff;
+    text-decoration: none;
+    border: 1px solid #00005e;
+}
+
+/* ==========================
+ Responsive
+========================== */
+
+@media (max-width:1100px){
+    .twocolumn .cards > ul{
+        grid-template-columns:1fr;
+    }
+
+}
+
+@media (max-width:768px){
+    .twocolumn .cards > ul > li{
+        grid-template-columns:1fr;
+    }
+
+    .twocolumn .cards-card-body{
+        padding:15px;
+    }
+
+    .twocolumn .cards-card-body strong{
+        font-size:20px;
+    }
+
+    .twocolumn .cards-card-body p:nth-child(2){
+        font-size:17px;
+    }
+
+    .twocolumn .cards-card-body a{
+        width:100%;
+        min-width:auto;
+        box-sizing:border-box;
+    }
+
+    .productrow .cards-wrapper .cards ul{
+        grid-template-columns: auto;
+    }
+
+    .whychooseus.section {
+        padding: 40px 0;
+    }
+}

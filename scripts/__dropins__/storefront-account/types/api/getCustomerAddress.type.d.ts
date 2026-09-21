@@ -54,3 +54,4 @@ export interface AddressResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getCustomerAddress.type.d.ts.map

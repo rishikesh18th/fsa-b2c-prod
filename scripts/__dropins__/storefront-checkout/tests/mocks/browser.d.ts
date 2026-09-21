@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export {};
+//# sourceMappingURL=browser.d.ts.map

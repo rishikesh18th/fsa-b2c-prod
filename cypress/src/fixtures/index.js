@@ -47,19 +47,19 @@ export const checkMoneyOrder = {
 
 export const products = {
   configurable: {
-    urlPath: "/products/cypress-configurable-product-latest/cypress456",
+    urlPath: "/cypress-configurable-product-latest.html",
     urlPathWithOptions: Cypress.env('productUrlWithOptions'),
   },
   virtual: {
-    urlPath: "/products/virtual-product/virtual123",
+    urlPath: "/virtual-product.html",
     sku: 'VIRTUAL123',
   },
   simple: {
-    urlPath: "/products/youth-tee/ADB150",
+    urlPath: "/youth-tee.html",
     sku: 'ADB150',
   },
   virtualGiftCard: {
-    urlPath: "/products/gift-card-virtual/gift-card-virtual",
+    urlPath: "/gift-card-virtual.html",
     sku: 'gift-card-virtual',
   }
 };

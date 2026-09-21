@@ -19,3 +19,4 @@ export interface EmptyListProps {
     minifiedView: boolean;
     message: string;
 }
+//# sourceMappingURL=emptyList.types.d.ts.map

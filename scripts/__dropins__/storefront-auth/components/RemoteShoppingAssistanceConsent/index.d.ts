@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './RemoteShoppingAssistanceConsent';
 export { RemoteShoppingAssistanceConsent as default } from './RemoteShoppingAssistanceConsent';
+//# sourceMappingURL=index.d.ts.map

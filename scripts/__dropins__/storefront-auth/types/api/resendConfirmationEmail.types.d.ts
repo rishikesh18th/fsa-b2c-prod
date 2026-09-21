@@ -22,3 +22,4 @@ export interface resendConfirmationEmailResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=resendConfirmationEmail.types.d.ts.map

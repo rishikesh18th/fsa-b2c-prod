@@ -26,3 +26,4 @@ export interface StoreConfig {
         shipping: TaxDisplay;
     };
 }
+//# sourceMappingURL=store-config.d.ts.map

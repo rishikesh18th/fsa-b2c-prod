@@ -45,3 +45,4 @@ export interface CheckoutError {
     code?: string;
 }
 export {};
+//# sourceMappingURL=checkout.d.ts.map

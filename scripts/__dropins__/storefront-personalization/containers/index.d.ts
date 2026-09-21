@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './TargetedBlock';
+//# sourceMappingURL=index.d.ts.map

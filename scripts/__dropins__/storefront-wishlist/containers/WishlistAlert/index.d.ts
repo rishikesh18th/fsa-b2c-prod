@@ -16,3 +16,4 @@
  *******************************************************************/
 export * from './WishlistAlert';
 export { WishlistAlert as default } from './WishlistAlert';
+//# sourceMappingURL=index.d.ts.map

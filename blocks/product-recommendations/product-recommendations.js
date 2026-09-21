@@ -20,9 +20,7 @@ import { render as wishlistRender } from '@dropins/storefront-wishlist/render.js
 
 // Block-level
 import { readBlockConfig } from '../../scripts/aem.js';
-import {
-  fetchPlaceholders, getProductLink, getStoreIdentifier,
-} from '../../scripts/commerce.js';
+import { fetchPlaceholders, getProductLink } from '../../scripts/commerce.js';
 
 // Initializers
 import '../../scripts/initializers/recommendations.js';
@@ -35,7 +33,7 @@ const isMobile = window.matchMedia('only screen and (max-width: 900px)').matches
  * @param {Object} entry - The history entry to validate
  * @returns {Object|null} - Validated history entry or null if invalid
  */
-function getValidViewEntry(entry) {
+function getValidHistoryEntry(entry) {
   // Basic validation to ensure the entry has necessary properties
   if (entry && typeof entry === 'object' && entry.sku && entry.date) {
     return {
@@ -48,69 +46,40 @@ function getValidViewEntry(entry) {
 
 /**
  * Gets product view history from localStorage
+ * @param {string} storeViewCode - The store view code
  * @returns {Array} - Array of view history items
  */
-export function getProductViewHistory() {
-  const storeIdentifier = getStoreIdentifier();
+function getProductViewHistory(storeViewCode) {
   try {
-    if (!storeIdentifier) {
-      return [];
-    }
-    const viewHistory = window.localStorage.getItem(`${storeIdentifier}:productViewHistory`) || '[]';
+    const viewHistory = window.localStorage.getItem(`${storeViewCode}:productViewHistory`) || '[]';
     const parsedHistory = JSON.parse(viewHistory);
     if (!Array.isArray(parsedHistory)) {
       throw new Error('Product view history is not an array');
     }
-    const validHistory = parsedHistory.map(getValidViewEntry).filter((entry) => entry !== null);
+    const validHistory = parsedHistory.map(getValidHistoryEntry).filter((entry) => entry !== null);
     if (validHistory.length === 0) {
       // If no valid entries, clear the history to prevent future parsing issues
-      window.localStorage.removeItem(`${storeIdentifier}:productViewHistory`);
+      window.localStorage.removeItem(`${storeViewCode}:productViewHistory`);
     }
     return validHistory;
   } catch (e) {
-    window.localStorage.removeItem(`${storeIdentifier}:productViewHistory`);
+    window.localStorage.removeItem(`${storeViewCode}:productViewHistory`);
     console.error('Error parsing product view history', e);
     return [];
   }
 }
 
 /**
- * Validates and returns a purchase history entry if valid
- * @param {Object} entry - The history entry to validate
- * @returns {Object|null} - Validated history entry or null if invalid
- */
-function getValidPurchaseEntry(entry) {
-  // Basic validation to ensure the entry has necessary properties
-  const { items, date } = entry ?? {};
-  if (Array.isArray(items) && items.every((item) => typeof item === 'string') && date) {
-    return { items, date };
-  }
-  return null;
-}
-
-/**
  * Gets purchase history from localStorage
+ * @param {string} storeViewCode - The store view code
  * @returns {Array} - Array of purchase history items
  */
-export function getPurchaseHistory() {
-  const storeIdentifier = getStoreIdentifier();
+function getPurchaseHistory(storeViewCode) {
   try {
-    if (!storeIdentifier) {
-      return [];
-    }
-    const purchaseHistory = window.localStorage.getItem(`${storeIdentifier}:purchaseHistory`) || '[]';
-    const parsedHistory = JSON.parse(purchaseHistory);
-    if (!Array.isArray(parsedHistory)) {
-      throw new Error('Purchase history is not an array');
-    }
-    const validHistory = parsedHistory.map(getValidPurchaseEntry).filter((entry) => entry !== null);
-    if (validHistory.length === 0) {
-      // If no valid entries, clear the history to prevent future parsing issues
-      window.localStorage.removeItem(`${storeIdentifier}:purchaseHistory`);
-    }
-    return validHistory;
+    const purchaseHistory = window.localStorage.getItem(`${storeViewCode}:purchaseHistory`) || '[]';
+    return JSON.parse(purchaseHistory);
   } catch (e) {
-    window.localStorage.removeItem(`${storeIdentifier}:purchaseHistory`);
+    window.localStorage.removeItem(`${storeViewCode}:purchaseHistory`);
     console.error('Error parsing purchase history', e);
     return [];
   }
@@ -139,6 +108,108 @@ export default async function decorate(block) {
   const $wrapper = fragment.querySelector('.recommendations__wrapper');
 
   block.appendChild(fragment);
+
+  function setupRecommendationCarousel(wrapper) {
+    const carouselContent = wrapper.querySelector('.recommendations-carousel__content');
+    if (!carouselContent) {
+      if (wrapper.dataset.carouselObserver !== 'true') {
+        wrapper.dataset.carouselObserver = 'true';
+        const observer = new MutationObserver(() => {
+          if (wrapper.querySelector('.recommendations-carousel__content')) {
+            observer.disconnect();
+            delete wrapper.dataset.carouselObserver;
+            setupRecommendationCarousel(wrapper);
+          }
+        });
+        observer.observe(wrapper, { childList: true, subtree: true });
+      }
+      return;
+    }
+    const productList = carouselContent ? carouselContent.closest('.recommendations-product-list') : null;
+
+    if (!carouselContent || !productList || productList.dataset.carouselReady === 'true') {
+      return;
+    }
+
+    const isDesktop = window.matchMedia('(min-width: 900px)');
+    const currentView = () => (isDesktop.matches ? 5 : 1);
+
+    if (productList.querySelector('.recommendations-carousel__nav--prev')) {
+      return;
+    }
+
+    const viewport = document.createElement('div');
+    viewport.className = 'recommendations-product-list__viewport';
+    const contentGrid = carouselContent.parentElement.parentElement;
+    productList.insertBefore(viewport, contentGrid);
+    viewport.appendChild(carouselContent);
+    contentGrid.remove();
+
+    productList.classList.add('recommendations-product-list--carousel');
+    productList.style.setProperty('--recommendations-items-per-view', String(currentView()));
+    productList.style.setProperty('--recommendations-gap', isDesktop.matches ? '20px' : '16px');
+
+    const prevButton = document.createElement('button');
+    prevButton.type = 'button';
+    prevButton.className = 'recommendations-carousel__nav recommendations-carousel__nav--prev';
+    prevButton.setAttribute('aria-label', 'Previous products');
+    prevButton.innerHTML = '<span aria-hidden="true">‹</span>';
+
+    const nextButton = document.createElement('button');
+    nextButton.type = 'button';
+    nextButton.className = 'recommendations-carousel__nav recommendations-carousel__nav--next';
+    nextButton.setAttribute('aria-label', 'Next products');
+    nextButton.innerHTML = '<span aria-hidden="true">›</span>';
+
+    productList.insertBefore(prevButton, viewport);
+    productList.appendChild(nextButton);
+
+    let currentIndex = 0;
+
+    const getItems = () => [...carouselContent.children];
+
+    const getStepSize = () => {
+      const firstItem = getItems()[0];
+      const gap = parseFloat(getComputedStyle(carouselContent).gap) || 0;
+      return firstItem ? firstItem.getBoundingClientRect().width + gap : 0;
+    };
+
+    const updateCarousel = () => {
+      if (carouselContent.parentElement !== viewport) {
+        viewport.appendChild(carouselContent);
+      }
+      const items = getItems();
+      const maxIndex = Math.max(items.length - currentView(), 0);
+      currentIndex = Math.min(currentIndex, maxIndex);
+      carouselContent.style.transform = `translate3d(-${currentIndex * getStepSize()}px, 0, 0)`;
+      prevButton.disabled = currentIndex === 0;
+      nextButton.disabled = currentIndex >= maxIndex;
+    };
+
+    prevButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      currentIndex = Math.max(currentIndex - currentView(), 0);
+      updateCarousel();
+    });
+
+    nextButton.addEventListener('click', (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      currentIndex += currentView();
+      updateCarousel();
+    });
+
+    isDesktop.addEventListener('change', () => {
+      currentIndex = 0;
+      productList.style.setProperty('--recommendations-items-per-view', String(currentView()));
+      updateCarousel();
+    });
+    const itemsObserver = new MutationObserver(updateCarousel);
+    itemsObserver.observe(productList, { childList: true, subtree: true });
+    updateCarousel();
+    productList.dataset.carouselReady = 'true';
+  }
 
   let visibility = !isMobile;
   let isLoading = false;
@@ -172,13 +243,14 @@ export default async function decorate(block) {
       container.innerHTML = '';
     }
 
+    const storeViewCode = getConfigValue('headers.cs.Magento-Store-View-Code');
     const createProductLink = (item) => getProductLink(item.urlKey, item.sku);
 
     // Get product view history
-    context.userViewHistory = getProductViewHistory();
+    context.userViewHistory = getProductViewHistory(storeViewCode);
 
     // Get purchase history
-    context.userPurchaseHistory = getPurchaseHistory();
+    context.userPurchaseHistory = getPurchaseHistory(storeViewCode);
 
     let recommendationsData = null;
 
@@ -305,6 +377,7 @@ export default async function decorate(block) {
           },
         })($wrapper),
       ]);
+      setupRecommendationCarousel($wrapper);
     } finally {
       isLoading = false;
     }

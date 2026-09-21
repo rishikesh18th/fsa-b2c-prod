@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './getCheckoutAgreements';
+//# sourceMappingURL=index.d.ts.map

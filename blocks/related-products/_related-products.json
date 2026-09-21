@@ -1,0 +1,32 @@
+{
+  "definitions": [
+    {
+      "title": "Related Products",
+      "id": "related-products",
+      "model": "related-products",
+      "plugins": {
+        "da": {
+          "type": "key-value-block"
+        }
+      }
+    }
+  ],
+  "models": [
+    {
+      "id": "related-products",
+      "fields": [
+        {
+          "component": "text",
+          "name": "heading",
+          "label": "Heading"
+        },
+        {
+          "component": "text",
+          "name": "currentSku",
+          "label": "Current SKU"
+        }
+      ]
+    }
+  ],
+  "filters": []
+}

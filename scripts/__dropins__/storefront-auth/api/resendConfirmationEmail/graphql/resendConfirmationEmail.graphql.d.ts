@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const RESEND_CONFIRMATION_EMAIL = "\n  mutation RESEND_CONFIRMATION_EMAIL($email: String!) {\n    resendConfirmationEmail(email: $email)\n  }\n";
+//# sourceMappingURL=resendConfirmationEmail.graphql.d.ts.map

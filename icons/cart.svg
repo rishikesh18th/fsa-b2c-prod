@@ -1,5 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon-icon-_rq">
-    <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
-    <line x1="3" y1="6" x2="21" y2="6"></line>
-    <path d="M16 10a4 4 0 0 1-8 0"></path>
+<svg xmlns="http://www.w3.org/2000/svg" width="22.623" height="21.663" viewBox="0 0 22.623 21.663">
+  <g id="Icon_feather-shopping-cart" data-name="Icon feather-shopping-cart" transform="translate(-0.75 -0.75)">
+    <path id="Path_2902" data-name="Path 2902" d="M13.92,30.96a.96.96,0,1,1-.96-.96A.96.96,0,0,1,13.92,30.96Z" transform="translate(-3.779 -10.257)" fill="none" stroke="#00005e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+    <path id="Path_2903" data-name="Path 2903" d="M30.42,30.96a.96.96,0,1,1-.96-.96A.96.96,0,0,1,30.42,30.96Z" transform="translate(-9.717 -10.257)" fill="none" stroke="#00005e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+    <path id="Path_2904" data-name="Path 2904" d="M1.5,1.5H5.341L7.914,14.356A1.92,1.92,0,0,0,9.834,15.9h9.333a1.92,1.92,0,0,0,1.92-1.546L22.623,6.3H6.3" fill="none" stroke="#00005e" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"/>
+  </g>
 </svg>

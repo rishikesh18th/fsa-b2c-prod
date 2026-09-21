@@ -22,3 +22,4 @@
  * @returns The decoded text with HTML entities converted to their characters
  */
 export declare const decodeHTMLEntities: (text: string) => string;
+//# sourceMappingURL=decodeHTMLEntities.d.ts.map

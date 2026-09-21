@@ -59,3 +59,4 @@ export interface RequestGuestReturnResponse {
     errors?: ErrorsProps[];
 }
 export {};
+//# sourceMappingURL=requestReturn.types.d.ts.map

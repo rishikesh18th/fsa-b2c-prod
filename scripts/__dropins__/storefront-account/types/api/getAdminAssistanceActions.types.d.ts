@@ -36,3 +36,4 @@ export interface AdminAssistanceActionsResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=getAdminAssistanceActions.types.d.ts.map

@@ -227,3 +227,4 @@ export declare const mockOrdersListResponse: {
         };
     };
 };
+//# sourceMappingURL=mockOrdersList.config.d.ts.map

@@ -14,4 +14,5 @@
  * is strictly forbidden unless prior written permission is obtained
  * from Adobe.
  *******************************************************************/
-export declare const setGuestEmailOnCart: (email: string) => Promise<import("../../data/models").Cart | undefined>;
+export declare const setGuestEmailOnCart: (email: string) => Promise<import('../../data/models/cart').Cart | undefined>;
+//# sourceMappingURL=setGuestEmailOnCart.d.ts.map

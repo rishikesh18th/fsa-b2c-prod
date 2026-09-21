@@ -214,6 +214,19 @@ function initializeAdobeDataLayer(pageType) {
 export async function fetchIndex(indexFile, pageSize = 500) {
   const handleIndex = async (offset) => {
     const resp = await fetch(`/${indexFile}.json?limit=${pageSize}&offset=${offset}`);
+
+    // A missing index (e.g. no enrichment content authored) returns 404 with an
+    // empty body — treat it as an empty, complete index instead of throwing on
+    // resp.json().
+    if (!resp.ok) {
+      return {
+        complete: true,
+        offset: window.index[indexFile].offset,
+        promise: null,
+        data: [...window.index[indexFile].data],
+      };
+    }
+
     const json = await resp.json();
 
     const newIndex = {
@@ -623,16 +636,6 @@ export async function commerceEndpointWithQueryParams() {
 }
 
 /**
- * Extracts the SKU from the current URL path.
- * @returns {string|null} The SKU extracted from the URL, or null if not found
- */
-function getSkuFromUrl() {
-  const path = window.location.pathname;
-  const result = path.match(/\/products\/[\w|-]+\/([\w|-]+)$/);
-  return result?.[1];
-}
-
-/**
  * Extracts the defaultSku property from the product-details block element.
  * @returns {string|null} The defaultSku value from the block, or null if not found
  */
@@ -673,20 +676,22 @@ export function getProductLink(urlKey, sku) {
     console.warn('getProductLink: sku is missing or empty', { urlKey, sku });
   }
   const sanitizedUrlKey = urlKey ? sanitizeName(urlKey) : '';
-  const sanitizedSku = sku ? sanitizeName(sku) : '';
-  return rootLink(`/products/${sanitizedUrlKey}/${sanitizedSku}`);
+  return rootLink(`/${sanitizedUrlKey}.html`);
 }
 
 /**
- * Gets the product SKU from metadata or URL fallback.
- * @returns {string|null} The SKU from metadata or URL, or null if not found
+ * Gets the product SKU from metadata. For an authored/bulk-metadata-backed
+ * PDP this is set server-side; for a dynamic PDP (see resolveProductRoute in
+ * product.js) the synthetic route injects this meta tag itself before the
+ * PDP dropin initializes.
+ * @returns {string|null} The SKU from metadata, or null if not found
  */
 export function getProductSku() {
   if (isProductTemplate() && (IS_UE || IS_DA)) {
     return getDefaultSkuFromBlock();
   }
 
-  return getMetadata('sku') || getSkuFromUrl();
+  return getMetadata('sku');
 }
 
 /**
@@ -698,25 +703,6 @@ export function getOptionsUIDsFromUrl() {
 }
 
 /**
- * Determines the store identifier for tracking history based on configuration headers.
- * @returns {string|undefined} Store identifier based on header values or undefined.
- */
-export function getStoreIdentifier() {
-  const headers = getHeaders('cs');
-  const saasStoreIdentifier = 'magento-store-view-code';
-  const acoStoreIdentifier = 'ac-view-id';
-  const storeIdentifierKey = Object.keys(headers).find(
-    (key) => [saasStoreIdentifier, acoStoreIdentifier].includes(key.toLowerCase()),
-  );
-  const storeIdentifier = storeIdentifierKey ? headers[storeIdentifierKey] : undefined;
-  if (!storeIdentifier) {
-    console.warn('No store view code found in config headers for tracking history');
-    return undefined;
-  }
-  return storeIdentifier;
-}
-
-/**
  * Tracks user browsing and purchase history for recommendations.
  * Stores product view history and purchase history in localStorage.
  */
@@ -725,35 +711,30 @@ function trackHistory() {
     return;
   }
   // Store product view history in session storage
-  const storeIdentifier = getStoreIdentifier();
-  if (storeIdentifier) {
-    window.adobeDataLayer.push((dl) => {
-      dl.addEventListener('adobeDataLayer:change', (event) => {
-        // Speculation Rules prerendering pushes productContext once immediately and
-        // again on activation. Ignore the prerender-only push so hovering a link
-        // doesn't record a view that never actually happened.
-        if (document.prerendering || !event.productContext || !event.productContext.sku) {
-          return;
-        }
-        const key = `${storeIdentifier}:productViewHistory`;
-        let viewHistory = JSON.parse(window.localStorage.getItem(key) || '[]');
-        viewHistory = viewHistory.filter((item) => item.sku !== event.productContext.sku);
-        viewHistory.push({ date: new Date().toISOString(), sku: event.productContext.sku });
-        window.localStorage.setItem(key, JSON.stringify(viewHistory.slice(-20)));
-      }, { path: 'productContext' });
-      dl.addEventListener('place-order', () => {
-        const shoppingCartContext = dl.getState('shoppingCartContext');
-        if (!shoppingCartContext) {
-          return;
-        }
-        const key = `${storeIdentifier}:purchaseHistory`;
-        const purchasedProducts = shoppingCartContext.items.map((item) => item.product.sku);
-        const purchaseHistory = JSON.parse(window.localStorage.getItem(key) || '[]');
-        purchaseHistory.push({ date: new Date().toISOString(), items: purchasedProducts });
-        window.localStorage.setItem(key, JSON.stringify(purchaseHistory.slice(-20)));
-      });
+  const storeViewCode = getConfigValue('headers.cs.Magento-Store-View-Code');
+  window.adobeDataLayer.push((dl) => {
+    dl.addEventListener('adobeDataLayer:change', (event) => {
+      if (!event.productContext || !event.productContext.sku) {
+        return;
+      }
+      const key = `${storeViewCode}:productViewHistory`;
+      let viewHistory = JSON.parse(window.localStorage.getItem(key) || '[]');
+      viewHistory = viewHistory.filter((item) => item.sku !== event.productContext.sku);
+      viewHistory.push({ date: new Date().toISOString(), sku: event.productContext.sku });
+      window.localStorage.setItem(key, JSON.stringify(viewHistory.slice(-20)));
+    }, { path: 'productContext' });
+    dl.addEventListener('place-order', () => {
+      const shoppingCartContext = dl.getState('shoppingCartContext');
+      if (!shoppingCartContext) {
+        return;
+      }
+      const key = `${storeViewCode}:purchaseHistory`;
+      const purchasedProducts = shoppingCartContext.items.map((item) => item.product.sku);
+      const purchaseHistory = JSON.parse(window.localStorage.getItem(key) || '[]');
+      purchaseHistory.push({ date: new Date().toISOString(), items: purchasedProducts });
+      window.localStorage.setItem(key, JSON.stringify(purchaseHistory.slice(-5)));
     });
-  }
+  });
 }
 
 /**

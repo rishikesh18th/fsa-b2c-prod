@@ -33,3 +33,4 @@ export interface getStoreConfigResponse {
         message: string;
     }[];
 }
+//# sourceMappingURL=storeConfig.types.d.ts.map

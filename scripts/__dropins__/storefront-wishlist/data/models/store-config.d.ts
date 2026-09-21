@@ -19,3 +19,4 @@ export interface StoreConfigModel {
     wishlistMaxNumber: number;
     wishlistMultipleListIsEnabled: boolean;
 }
+//# sourceMappingURL=store-config.d.ts.map

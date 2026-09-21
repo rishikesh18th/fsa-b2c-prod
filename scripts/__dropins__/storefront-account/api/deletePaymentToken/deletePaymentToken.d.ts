@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const deletePaymentToken: (publicHash: string) => Promise<boolean>;
+//# sourceMappingURL=deletePaymentToken.d.ts.map

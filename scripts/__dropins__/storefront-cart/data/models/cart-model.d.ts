@@ -150,7 +150,7 @@ export interface Item {
     onlyXLeftInStock?: number | null;
     outOfStock?: boolean;
     notAvailableMessage?: string;
-    stockLevel?: string;
+    stockLevel?: String;
     discountPercentage?: number;
     savingsAmount?: Price;
     productAttributes?: Attribute[];
@@ -201,3 +201,4 @@ export interface WrappingImage {
     design: string;
 }
 export {};
+//# sourceMappingURL=cart-model.d.ts.map

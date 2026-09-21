@@ -1,3 +1,7 @@
 body.columns main > .section > div.commerce-account-header-wrapper {
     margin-bottom: 0;
 }
+
+.account-empty-list.account-empty-list--minified .dropin-card__content{
+    padding: 10px 0;
+}

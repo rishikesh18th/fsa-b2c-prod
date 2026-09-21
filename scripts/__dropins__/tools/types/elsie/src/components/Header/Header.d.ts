@@ -1,13 +1,6 @@
-/********************************************************************
- *  Copyright 2024 Adobe
- *  All Rights Reserved.
- *
- * NOTICE:  Adobe permits you to use, modify, and distribute this
- * file in accordance with the terms of the Adobe license agreement
- * accompanying it.
- *******************************************************************/
 import { FunctionComponent, VNode } from 'preact';
 import { HTMLAttributes } from 'preact/compat';
+
 export interface HeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'size'> {
     title: string;
     size?: 'medium' | 'large';
@@ -16,3 +9,4 @@ export interface HeaderProps extends Omit<HTMLAttributes<HTMLDivElement>, 'size'
     level?: 1 | 2 | 3 | 4 | 5 | 6;
 }
 export declare const Header: FunctionComponent<HeaderProps>;
+//# sourceMappingURL=Header.d.ts.map

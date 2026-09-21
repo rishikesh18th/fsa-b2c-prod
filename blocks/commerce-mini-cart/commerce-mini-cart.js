@@ -26,7 +26,18 @@ export default async function decorate(block) {
     'checkout-url': checkoutURL = '',
     'enable-updating-product': enableUpdatingProduct = 'false',
     'undo-remove-item': undo = 'false',
+    'enable-quantity-update': enableQuantityUpdate = 'true',
+    'enable-item-removal': enableItemRemoval = 'true',
   } = readBlockConfig(block);
+
+  // Keeps the heading title element so it can be updated as the cart changes
+  let headingTitle = null;
+  const updateHeadingCount = (data) => {
+    if (!headingTitle) return;
+    const qty = data?.totalQuantity ?? 0;
+    const label = qty === 1 ? 'Item' : 'Items';
+    headingTitle.textContent = `${qty} ${label} in Cart`;
+  };
 
   // Get translations for custom messages
   const placeholders = await fetchPlaceholders();
@@ -167,8 +178,32 @@ export default async function decorate(block) {
     routeCheckout: checkoutURL ? () => rootLink(checkoutURL) : undefined,
     routeProduct: createProductLink,
     undo: undo === 'true',
+    enableQuantityUpdate: enableQuantityUpdate !== 'false',
+    enableItemRemoval: enableItemRemoval !== 'false',
 
     slots: {
+      Heading: (ctx) => {
+        const heading = document.createElement('div');
+        heading.className = 'commerce-mini-cart__heading';
+
+        headingTitle = document.createElement('span');
+        headingTitle.className = 'commerce-mini-cart__heading-title';
+        headingTitle.textContent = placeholders?.Global?.MiniCartHeading || 'Cart';
+
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
+        closeButton.className = 'commerce-mini-cart__close';
+        closeButton.setAttribute('aria-label', placeholders?.Global?.MiniCartClose || 'Close cart');
+        closeButton.innerHTML = '<span aria-hidden="true">&times;</span>';
+        closeButton.addEventListener('click', () => {
+          const panel = block.closest('.minicart-panel');
+          if (panel) panel.classList.remove('nav-tools-panel--show');
+        });
+
+        heading.append(headingTitle, closeButton);
+        // Replace the default "Shopping Cart ({count})" heading entirely
+        ctx.replaceWith(heading);
+      },
       Thumbnail: (ctx) => {
         const { item, defaultImageProps } = ctx;
         const anchorWrapper = document.createElement('a');
@@ -194,9 +229,6 @@ export default async function decorate(block) {
 
           UI.render(Button, {
             children: placeholders?.Global?.CartEditButton,
-            // Every cart item renders its own Edit button, so the accessible
-            // name must include the product name to distinguish them.
-            'aria-label': `${placeholders?.Global?.CartEditButton} ${item.name}`,
             variant: 'tertiary',
             size: 'medium',
             icon: h(Icon, { source: 'Edit' }),
@@ -209,6 +241,9 @@ export default async function decorate(block) {
       },
     },
   })(block);
+
+  // Keep the heading item count in sync with the cart (fires eagerly with cached data)
+  events.on('cart/data', updateHeadingCount, { eager: true });
 
   // Find the products container and add the message div at the top
   const productsContainer = block.querySelector('.cart-mini-cart__products');

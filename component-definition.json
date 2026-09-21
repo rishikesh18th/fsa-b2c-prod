@@ -206,6 +206,17 @@
           }
         },
         {
+          "title": "Custom Form",
+          "id": "custom-form",
+          "model": "custom-form",
+          "plugins": {
+            "da": {
+              "rows": 1,
+              "columns": 2
+            }
+          }
+        },
+        {
           "title": "Enrichment",
           "id": "enrichment",
           "model": "enrichment",
@@ -602,6 +613,16 @@
           "title": "Product Recommendations",
           "id": "product-recommendations",
           "model": "product-recommendations",
+          "plugins": {
+            "da": {
+              "type": "key-value-block"
+            }
+          }
+        },
+        {
+          "title": "Related Products",
+          "id": "related-products",
+          "model": "related-products",
           "plugins": {
             "da": {
               "type": "key-value-block"

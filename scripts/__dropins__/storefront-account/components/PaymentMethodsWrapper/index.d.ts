@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export * from './PaymentMethodsWrapper';
+//# sourceMappingURL=index.d.ts.map

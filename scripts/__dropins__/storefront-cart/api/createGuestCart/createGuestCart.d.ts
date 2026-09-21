@@ -15,3 +15,4 @@
  * from Adobe.
  *******************************************************************/
 export declare const createGuestCart: () => Promise<any>;
+//# sourceMappingURL=createGuestCart.d.ts.map

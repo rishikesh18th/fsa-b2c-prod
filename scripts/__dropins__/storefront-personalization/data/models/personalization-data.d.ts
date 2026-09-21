@@ -19,3 +19,4 @@ export interface PersonalizationData {
     groups: string[];
     cartRules: string[];
 }
+//# sourceMappingURL=personalization-data.d.ts.map

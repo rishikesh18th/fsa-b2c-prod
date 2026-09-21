@@ -1,13 +1,11 @@
 footer {
     background-color: var(--color-neutral-100);
     font: var(--type-body-2-default-font);
-    letter-spacing: var(--type-body-2-default-letter-spacing);
 }
 
 footer .footer > div {
     margin: auto;
-    max-width: 1200px;
-    padding: 40px 24px 24px;
+    max-width: 1440px;
 }
 
 footer .footer p {
@@ -66,8 +64,277 @@ footer .footer p {
     margin-bottom: var(--spacing-small);
 }
 
-@media (min-width: 900px) {
-    footer .footer > div {
-        padding: 40px 32px 24px;
-    }
+
+
+
+/* ===========================
+   Footer
+=========================== */
+
+.footer-wrapper {
+    background: #10286b;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+    padding-top: 50px;
+}
+
+/* Background Curves */
+.footersection::before,
+.footersection::after {
+    content: "";
+    position: absolute;
+    border-radius: 50%;
+    pointer-events: none;
+}
+
+.footersection::before {
+    width: 1700px;
+    height: 520px;
+    background: rgb(255 255 255 / 4%);
+    top: -280px;
+    left: -450px;
+}
+
+.footersection::after {
+    width: 1200px;
+    height: 420px;
+    background: rgb(255 255 255 / 3%);
+    top: -220px;
+    right: -250px;
+}
+
+/* Container */
+.footersection .cards-wrapper,
+.footersection .columns-wrapper {
+    max-width: 1480px;
+    margin: auto;
+    position: relative;
+    z-index: 2;
+    margin-top: 0 !important;
+}
+
+/* ===========================
+   Top Footer
+=========================== */
+
+.footersection .cards ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.footersection .cards li {
+    border: 0;
+    background: transparent;
+}
+
+.footersection .cards li img {
+    height: 20px;
+    object-fit: contain;
+    width: auto;
+    aspect-ratio: auto;
+}
+
+/* Headings */
+
+.footersection strong {
+    display: block;
+    margin-bottom: 20px;
+    font-size: 16px;
+    color: #fff;
+    font-weight: 600;
+    margin-top: 20px;
+}
+
+/* Lists */
+
+.footersection ul ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.footersection ul ul li {
+    margin-bottom: 5px;
+    line-height: 1.5;
+    color: rgb(255 255 255 / 85%);
+    font-weight: 400;
+}
+
+.footersection ul ul li a {
+    color: #fff;
+    text-decoration: none;
+    transition: .3s;
+    font-weight: 400;
+    font-size: 14px;
+}
+
+.footersection ul ul li a:hover {
+    color: #fff;
+}
+
+/* Connect */
+
+.footersection .cards li:nth-child(3) p:not(:first-child) {
+    margin-bottom: 12px;
+}
+
+/* ===========================
+   Bottom Footer
+=========================== */
+
+.footersection .columns-wrapper {
+    margin-top: 50px;
+    background: #08114d;
+    max-width: 100%;
+    position: relative;
+}
+
+.footersection .columns-wrapper::before{
+    content: '';
+    background-color: #000043;
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: 100vw;
+    height: 100%;
+    z-index: -1;
+}
+
+.footersection .columns>div {
+    margin: auto;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.footersection .columns>div>div:first-child p {
+    margin: 0;
+    color: #fff;
+    font-size: 12px;
+}
+
+.footersection .columns-img-col p {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    margin: 0;
+    color: #fff;
+    font-size: 18px;
+    font-weight: 600;
+    justify-content: flex-end;
+}
+
+.footersection .columns-img-col img {
+    display: block;
+    width: 100%;
+}
+
+/* ===========================
+   Responsive
+=========================== */
+
+@media (max-width:1100px){
+.footersection .cards ul{
+    grid-template-columns:repeat(2,1fr);
+    gap:50px;
+}
+
+.footersection .columns>div{
+    flex-direction:column;
+    gap:20px;
+    text-align:center;
+}
+
+.footersection .columns-img-col p{
+    flex-direction:column;
+    gap:0;
+}
+
+}
+
+@media (max-width:767px){
+.footer-wrapper{
+    padding-top: 30px;
+}
+
+.footersection .cards ul{
+    grid-template-columns:1fr;
+    gap:0;
+}
+
+/* Accordion: headings become toggles */
+.footersection .cards-card-body .footer-accordion-toggle {
+    cursor: pointer;
+    position: relative;
+    user-select: none;
+    padding: 15px 30px 15px 0;
+    border-bottom: 1px solid #fff;
+}
+
+.footersection .cards-card-body .footer-accordion-toggle:last-child {
+    border-bottom: 0;
+}
+
+.footersection .cards li:nth-child(3) p:not(:first-child) {
+    margin-bottom: 0;
+}
+
+.footersection .cards-wrapper{
+    padding-bottom: 30px;
+}
+
+.footersection .cards .cards-card-body {
+    margin: 0 20px;
+}
+
+.footersection .cards-card-body .footer-accordion-toggle strong {
+    margin: 0;
+}
+
+.footersection .cards-card-body .footer-accordion-toggle::after {
+    content: "";
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    width: 9px;
+    height: 9px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: translateY(-75%) rotate(45deg);
+    transition: transform .35s ease;
+}
+
+.footersection .cards-card-body .footer-accordion-toggle[aria-expanded="true"]::after {
+    transform: translateY(-25%) rotate(-135deg);
+}
+
+.footersection .cards-card-body .footer-accordion-toggle:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+/* Accordion: collapsible panel */
+.footersection .cards-card-body .footer-accordion-panel {
+    display: grid;
+    grid-template-rows: 0fr;
+    transition: grid-template-rows .35s ease, opacity .35s ease;
+    opacity: 0;
+}
+
+.footersection .cards-card-body .footer-accordion-panel > div {
+    overflow: hidden;
+    min-height: 0;
+}
+
+.footersection .cards-card-body .footer-accordion-panel.footer-accordion-open {
+    grid-template-rows: 1fr;
+    opacity: 1;
+    padding-top: 15px;
+}
+
 }

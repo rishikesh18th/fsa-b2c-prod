@@ -10,3 +10,7 @@ body.columns main > .section > div.commerce-order-header-wrapper {
     display: inline-block;
     margin-bottom: var(--spacing-medium);
 }
+
+.order-header{
+    padding: 20px;
+}

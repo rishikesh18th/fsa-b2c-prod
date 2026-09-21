@@ -38,6 +38,9 @@
           "...": "../blocks/columns/_*.json#/definitions"
         },
         {
+          "...": "../blocks/custom-form/_*.json#/definitions"
+        },
+        {
           "...": "../blocks/enrichment/_*.json#/definitions"
         },
 
@@ -61,6 +64,9 @@
       "components": [
         {
           "...": "../blocks/product-*/_*.json#/definitions"
+        },
+        {
+          "...": "../blocks/related-products/_*.json#/definitions"
         }
       ]
     }

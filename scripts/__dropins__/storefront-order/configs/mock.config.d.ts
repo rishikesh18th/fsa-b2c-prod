@@ -5332,3 +5332,4 @@ export declare const placeOrderMockData: {
         };
     };
 };
+//# sourceMappingURL=mock.config.d.ts.map
